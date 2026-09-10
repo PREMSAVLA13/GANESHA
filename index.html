@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ganesh Chaturthi — The Jethva Family Invites You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Tiro+Devanagari+Sanskrit&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon-deep:#1c0705;
+    --maroon:#41100e;
+    --maroon-light:#6b1f14;
+    --panel:#2c0d0c;
+    --gold:#e0ac3f;
+    --gold-bright:#f6d585;
+    --gold-dim:#9a7226;
+    --marigold:#ff9a3d;
+    --marigold-deep:#e8722a;
+    --cream:#fbead0;
+    --cream-dim:#e6cfa4;
+    --ink:#3a1a0a;
+    --ease-page: cubic-bezier(.65,0,.35,1);
+    --ease-soft: cubic-bezier(.22,.61,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+    background:var(--maroon-deep);
+    overscroll-behavior:none;
+  }
+  body{
+    font-family:'Baloo 2',sans-serif;
+    color:var(--cream);
+    -webkit-tap-highlight-color:transparent;
+  }
+  h1,h2,h3,.display{
+    font-family:'Rozha One', serif;
+    font-weight:400;
+    line-height:1.18;
+  }
+  ::selection{ background:var(--marigold); color:var(--maroon-deep); }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  :focus-visible{ outline:2px solid var(--marigold); outline-offset:3px; }
+  svg{ display:block; }
+
+  .bg-wash{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,154,61,0.14), transparent 55%),
+      radial-gradient(ellipse at 15% 95%, rgba(224,172,63,0.10), transparent 50%),
+      linear-gradient(180deg, var(--maroon-deep) 0%, var(--maroon) 55%, var(--maroon-deep) 100%);
+  }
+  .bg-wash::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(circle, rgba(224,172,63,0.09) 1px, transparent 1.3px);
+    background-size: 24px 24px;
+  }
+
+  #petal-canvas{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:45; }
+
+  .bg-video-wrap{
+    position:fixed; inset:0; z-index:1;
+    opacity:0; transition: opacity 1.4s var(--ease-soft);
+    pointer-events:none;
+  }
+  .bg-video-wrap.playing{ opacity:1; }
+  .bg-video-wrap video{
+    width:100%; height:100%; object-fit:cover;
+  }
+  .bg-video-wrap::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(28,7,5,.55), transparent 55%),
+      linear-gradient(180deg, rgba(28,7,5,.72) 0%, rgba(28,7,5,.55) 45%, rgba(28,7,5,.8) 100%);
+  }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.35rem 1rem; border-radius:999px;
+    border:1px solid rgba(224,172,63,.5);
+    background:rgba(0,0,0,.22);
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--marigold);
+    font-weight:600;
+    margin-bottom:1.1rem;
+  }
+  .pill .dot{ width:5px; height:5px; border-radius:50%; background:var(--marigold); }
+
+  .scroll-hint{
+    position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+    color:var(--gold-dim); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+    opacity:.7; z-index:5; pointer-events:none;
+    animation: hintFade 1.8s ease-in-out infinite;
+  }
+  @keyframes hintFade{ 0%,100%{ opacity:.45;} 50%{ opacity:.85;} }
+
+  /* ================= SHARED GANESHA MOTIF ================= */
+  .ganesha-icon .g-head{ fill:url(#headGrad); stroke:#c98a2e; stroke-width:1.4; }
+  .ganesha-icon .g-ear{ fill:url(#earGrad); stroke:#c98a2e; stroke-width:1.2; }
+  .ganesha-icon .g-crown{ fill:url(#crownGrad); stroke:#c98a2e; stroke-width:1.2; }
+  .ganesha-icon .g-trunk{ fill:url(#headGrad); stroke:#c98a2e; stroke-width:1.2; }
+  .ganesha-icon .g-eye{ fill:#3a1205; }
+  .ganesha-icon .g-tilak{ fill:var(--marigold); }
+  .ganesha-icon .g-tusk{ fill:#fbead0; stroke:#c98a2e; stroke-width:1; }
+  .mouse-icon{ color:var(--gold-dim); opacity:.6; }
+
+  /* ================= GATE SCREEN ================= */
+  .gate-screen{
+    position:fixed; inset:0; z-index:60;
+    display:flex; align-items:center; justify-content:center;
+    perspective:2000px;
+    transition: opacity .7s var(--ease-soft);
+  }
+  .gate-screen.fading{ opacity:0; pointer-events:none; }
+
+  .gate-glow{
+    position:absolute; inset:0; z-index:2;
+    background: radial-gradient(circle at 50% 45%, rgba(255,154,61,.32), transparent 60%);
+    opacity:0; transition: opacity 1.3s var(--ease-soft);
+  }
+  .gate-stage.opened .gate-glow{ opacity:1; }
+
+  .pillar{
+    position:absolute; top:0; bottom:0; width:38px;
+    background: linear-gradient(90deg, rgba(0,0,0,.35), rgba(224,172,63,.14) 40%, rgba(0,0,0,.35));
+    z-index:1; display:none;
+  }
+  .pillar.pl{ left:0; } .pillar.pr{ right:0; }
+  .pillar::before, .pillar::after{
+    content:""; position:absolute; left:-6px; right:-6px; height:16px;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold-dim));
+    border-radius:3px;
+  }
+  .pillar::before{ top:40px; } .pillar::after{ bottom:40px; }
+  @media (min-width:900px){ .pillar{ display:block; } }
+
+  .gate-top-frame{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:min(94%, 720px); z-index:9; pointer-events:none;
+  }
+  .gate-top-frame svg{ width:100%; }
+
+  .gate-door{
+    position:absolute; top:0; bottom:0; width:50%;
+    transition: transform 1.5s var(--ease-page);
+    z-index:5;
+  }
+  .gate-door.left{ left:0; transform-origin:left center; }
+  .gate-door.right{ right:0; transform-origin:right center; }
+  .gate-stage.opened .gate-door.left{ transform: rotateY(-108deg) translateX(-4%); }
+  .gate-stage.opened .gate-door.right{ transform: rotateY(108deg) translateX(4%); }
+
+  .door-face{
+    position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 6px, rgba(255,255,255,.02) 6px 10px, rgba(0,0,0,.1) 10px 16px),
+      linear-gradient(160deg, #7a2418 0%, #4a130f 45%, #2c0b09 100%);
+    border:3px solid var(--gold);
+    box-shadow: inset 0 0 50px rgba(0,0,0,.55), inset 0 0 0 6px rgba(224,172,63,.12);
+  }
+  .gate-door.left .door-face{ border-right:none; border-radius: 6px 90px 90px 6px / 6px 40px 40px 6px; }
+  .gate-door.right .door-face{ border-left:none; border-radius: 90px 6px 6px 90px / 40px 6px 6px 40px; }
+
+  .door-jali{ position:absolute; top:14%; left:50%; transform:translateX(-50%); width:52%; opacity:.9; }
+  .gate-door.left .door-jali{ left:auto; right:20%; transform:none; }
+  .gate-door.right .door-jali{ left:20%; transform:none; }
+
+  .door-studs{ position:absolute; inset:16px; border-radius:inherit; pointer-events:none;
+    background-image: radial-gradient(circle, rgba(246,213,133,.9) 1.6px, transparent 1.9px);
+    background-size: 34px 34px;
+    opacity:.55;
+  }
+
+  .door-handle{ position:absolute; top:50%; transform:translateY(-50%); width:34px; height:34px; }
+  .gate-door.left .door-handle{ right:8%; }
+  .gate-door.right .door-handle{ left:8%; }
+  .door-handle svg{ width:100%; height:100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+
+  .gate-clasp{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    z-index:11; width:min(58px,13vw); height:min(58px,13vw);
+    transition: opacity .55s ease, transform .7s var(--ease-soft);
+  }
+  .gate-stage.opened .gate-clasp{ opacity:0; transform:translate(-50%,-50%) scale(.35) rotate(20deg); }
+  .gate-clasp svg{ width:100%; height:100%; animation:claspGlow 2.4s ease-in-out infinite; }
+  @keyframes claspGlow{
+    0%,100%{ filter: drop-shadow(0 0 7px rgba(255,154,61,.65)); }
+    50%{ filter: drop-shadow(0 0 18px rgba(255,154,61,1)); }
+  }
+
+  .gate-content{
+    position:absolute; inset:0; z-index:12;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    padding-bottom: clamp(2rem, 8vh, 5rem);
+    text-align:center;
+    transition: opacity .9s var(--ease-soft), transform .9s var(--ease-soft);
+  }
+  .gate-stage.opened .gate-content{ opacity:0; transform:translateY(18px); pointer-events:none; }
+
+  .gate-crest{ width:52px; height:57px; margin-bottom:.7rem; }
+  .gate-title{
+    font-size: clamp(1.9rem, 6vw, 3.2rem);
+    color:var(--gold-bright);
+    text-shadow: 0 0 24px rgba(255,154,61,.35);
+    max-width:14ch;
+  }
+  .gate-sub{ margin-top:.8rem; font-size: clamp(.95rem,2.4vw,1.1rem); color:var(--cream-dim); max-width:32ch; }
+
+  .gate-btn{
+    margin-top:2rem; padding:.9rem 2rem; border-radius:999px;
+    font-weight:700; font-size:1rem; color:var(--maroon-deep);
+    background: linear-gradient(135deg, var(--gold-bright), var(--marigold));
+    box-shadow: 0 0 0 1px rgba(255,255,255,.3) inset, 0 8px 24px rgba(255,154,61,.4);
+    display:inline-flex; align-items:center; gap:.55rem;
+    transition: transform .3s var(--ease-soft);
+    animation: breathe 3s ease-in-out infinite;
+  }
+  .gate-btn:hover{ transform: translateY(-3px) scale(1.03); }
+  .gate-btn:active{ transform: translateY(0) scale(.97); }
+  @keyframes breathe{ 0%,100%{ box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 8px 24px rgba(255,154,61,.32);} 50%{ box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 8px 32px rgba(255,154,61,.55);} }
+  .gate-hint{ margin-top:.85rem; font-size:.76rem; color:var(--gold-dim); }
+
+  /* ================= BOOK CONTAINER ================= */
+  .book-container{
+    position:fixed; inset:0; z-index:10;
+    perspective: 2400px;
+    opacity:0; transition: opacity .8s var(--ease-soft);
+    display:none;
+  }
+  .book-container.visible{ opacity:1; }
+
+  .book-page{
+    position:absolute; inset:0; width:100%; height:100%;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+    backface-visibility:hidden;
+    will-change: transform;
+    display:flex; align-items:center; justify-content:center;
+    padding: clamp(1.5rem,5vw,3.5rem) clamp(1.25rem,6vw,3rem);
+  }
+  /* soft shadow gradient during a page turn, like a real paper fold */
+  .book-page::before{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+    background: linear-gradient(90deg, rgba(0,0,0,.35), transparent 12%, transparent 88%, rgba(0,0,0,.35));
+    opacity:0; transition: opacity .4s ease;
+  }
+  .book-page.turning::before{ opacity:1; }
+  .page-inner{ position:relative; z-index:2; width:100%; max-width:640px; margin:0 auto; text-align:center; }
+
+  .book-nav{
+    position:fixed; z-index:80;
+    right: max(.9rem, env(safe-area-inset-right));
+    top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:.6rem;
+  }
+  @media (max-width:640px){
+    .book-nav{ right:auto; left:50%; top:auto; bottom: max(.8rem, env(safe-area-inset-bottom)); transform:translateX(-50%); flex-direction:row; }
+  }
+  .book-dot{
+    width:9px; height:9px; border-radius:50%;
+    background: rgba(224,172,63,.35);
+    border:1px solid rgba(224,172,63,.6);
+    transition: background .3s, transform .3s;
+  }
+  .book-dot.active{ background: var(--marigold); transform:scale(1.3); }
+
+  /* ================= WELCOME PAGE ================= */
+  .mandala-wrap{ position:relative; width:clamp(190px,40vw,260px); aspect-ratio:1; margin:0 auto 1.4rem; }
+  .mandala-ring{ position:absolute; inset:0; border-radius:50%; border:1px solid rgba(224,172,63,.4); }
+  .mandala-ring.r2{ inset:10px; animation:spin 60s linear infinite; }
+  .mandala-ring.r3{ inset:22px; animation:spin 90s linear infinite reverse; border-style:dashed; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .mandala-core{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .mandala-core svg{ width:64%; filter: drop-shadow(0 0 20px rgba(255,154,61,.5)); }
+  .ripple{ position:absolute; border-radius:50%; border:1.5px solid rgba(255,154,61,.7); left:50%; top:50%; transform:translate(-50%,-50%); width:20px; height:20px; opacity:0; pointer-events:none; }
+  .ripple.active{ animation: rippleOut 1.1s var(--ease-soft) forwards; }
+  @keyframes rippleOut{ 0%{ width:20px; height:20px; opacity:.9;} 100%{ width:300px; height:300px; opacity:0;} }
+  .shloka-columns{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+    gap: clamp(.9rem,3.5vw,2.2rem);
+  }
+  .shloka{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:700;
+    font-size:clamp(1.15rem,2.6vw,1.55rem); letter-spacing:.01em;
+    color:var(--gold-bright); line-height:1.4; max-width:20ch; margin:0; flex:0 1 auto;
+    text-shadow: 0 2px 6px rgba(0,0,0,.85), 0 8px 30px rgba(0,0,0,.7);
+  }
+  .shloka-hindi{
+    font-family:'Tiro Devanagari Sanskrit', serif; font-style:normal; font-weight:400;
+    font-size:clamp(1.2rem,2.7vw,1.65rem); color:var(--gold-bright); line-height:1.55;
+    max-width:20ch; margin:0; flex:0 1 auto;
+    text-shadow: 0 2px 6px rgba(0,0,0,.85), 0 8px 30px rgba(0,0,0,.7);
+  }
+  .shloka-divider{
+    width:1px; align-self:stretch; min-height:70px;
+    background:linear-gradient(180deg, transparent, rgba(224,172,63,.55), transparent);
+    display:none;
+  }
+  @media (min-width:640px){ .shloka-divider{ display:block; } }
+  .shloka-sub{
+    margin-top:1.2rem; font-size:clamp(.78rem,1.8vw,.92rem); color:var(--cream);
+    font-style:italic; max-width:36ch; margin-inline:auto;
+    text-shadow: 0 2px 8px rgba(0,0,0,.85);
+  }
+  .book-page[data-i="0"] .page-inner{ opacity:0; transition: opacity 1.5s var(--ease-soft); position:relative; max-width:900px; }
+  .book-page[data-i="0"] .page-inner.show{ opacity:1; }
+  .book-page[data-i="0"] .page-inner::before{
+    content:""; position:absolute; inset:-2.5rem -1.5rem; z-index:-1; border-radius:40px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(20,5,4,.6), transparent 72%);
+  }
+
+  /* ================= ENVELOPE PAGE ================= */
+  .envelope-zone{ position:relative; min-height:440px; display:flex; align-items:center; justify-content:center; }
+  .envelope{
+    position:relative; width:min(320px,84vw); aspect-ratio:16/10.5;
+    perspective: 1000px;
+    cursor:pointer;
+    transition: opacity .6s ease, transform .6s var(--ease-soft);
+  }
+  .envelope.opening{ opacity:0; transform:scale(.9) translateY(-6px); pointer-events:none; }
+  .envelope-body{
+    position:absolute; inset:0; border-radius:10px;
+    background: linear-gradient(160deg, #e8cf9e, #d8b779 60%, #cba766);
+    box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(58,26,10,.25);
+  }
+  .envelope-body::before{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:62%;
+    background: linear-gradient(160deg, #e2c58e, #cba766);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    border-top:1px solid rgba(58,26,10,.15);
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; right:0; height:60%;
+    background: linear-gradient(160deg, #f0dcae, #dcbd82);
+    clip-path: polygon(0 0, 100% 0, 50% 92%);
+    transform-origin: top center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: transform 1.1s var(--ease-soft);
+    z-index:3;
+    box-shadow: 0 6px 14px rgba(0,0,0,.25);
+    border-radius:8px 8px 0 0;
+  }
+  .envelope.open .envelope-flap{ transform: rotateX(-180deg); }
+  .wax-seal{
+    position:absolute; top:52%; left:50%; transform:translate(-50%,-50%);
+    width:52px; height:52px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--marigold), var(--marigold-deep) 75%);
+    box-shadow: 0 4px 10px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.15);
+    display:flex; align-items:center; justify-content:center;
+    z-index:4;
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .envelope.open .wax-seal{ opacity:0; transform:translate(-50%,-50%) scale(.6); }
+  .wax-seal svg{ width:28px; height:31px; }
+  .envelope-tap{
+    position:absolute; bottom:-2.4rem; left:50%; transform:translateX(-50%);
+    font-size:.85rem; color:var(--gold-dim); white-space:nowrap;
+    transition: opacity .4s ease;
+  }
+  .envelope.open .envelope-tap{ opacity:0; }
+
+  .card-unfold{
+    position:absolute; inset:0; margin:auto;
+    width:min(420px,92vw); max-width:92vw;
+    height:fit-content;
+    opacity:0; transform:translateY(16px);
+    pointer-events:none;
+    transition: opacity .7s ease, transform .7s var(--ease-soft);
+  }
+  .card-unfold.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .fold-panel{
+    background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 25%),
+                linear-gradient(160deg,#f2e3bf,#e6cf9c);
+    color:var(--ink); border-radius:12px; padding: 1.4rem 1.5rem;
+    box-shadow: 0 16px 40px rgba(0,0,0,.4);
+    text-align:center;
+  }
+  .fold-panel.top{ position:relative; z-index:2; }
+  .fold-panel.bottom{
+    position:relative; z-index:1; margin-top:-8px;
+    text-align:left;
+    border-radius:0 0 12px 12px;
+  }
+  .fold-crest{ width:34px; height:37px; margin:0 auto .6rem; color:var(--maroon); }
+  .fold-panel.top h2{ font-size:clamp(1.4rem,4vw,1.9rem); color:var(--maroon); margin:.1rem 0; }
+  .fold-host{ font-family:'Rozha One',serif; color:var(--marigold-deep); font-size:clamp(1rem,2.6vw,1.25rem); }
+  .fold-rows{ display:flex; flex-direction:column; gap:.9rem; }
+  .fold-row{ display:flex; gap:.75rem; align-items:flex-start; }
+  .fold-row svg{ width:19px; height:19px; flex-shrink:0; margin-top:.1rem; color:var(--maroon-light); }
+  .fold-row .label{ font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:#8a6a24; }
+  .fold-row .value{ font-size:.95rem; line-height:1.45; }
+  .fold-row .value small{ display:block; color:#6b5638; font-size:.8rem; margin-top:.1rem; }
+  .directions-btn{
+    margin-top:1.2rem; width:100%; padding:.8rem 1.1rem; border-radius:9px;
+    background: linear-gradient(135deg, var(--maroon), var(--maroon-light));
+    color:var(--cream); font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:.55rem;
+    box-shadow: 0 8px 18px rgba(58,13,20,.35);
+    transition: transform .3s var(--ease-soft);
+  }
+  .directions-btn:hover{ transform: translateY(-2px); }
+  .directions-btn svg{ width:16px; height:16px; }
+
+  /* ================= POOJA DAY PAGE ================= */
+  .pooja-card{ padding: clamp(1.6rem,5vw,2.2rem) clamp(1rem,5vw,2rem); position:relative; }
+  .pooja-card h2{ font-size: clamp(1.7rem,5vw,2.4rem); color:var(--gold-bright); margin:.3rem 0 .9rem; }
+  .pooja-time{ font-size: clamp(1rem,2.6vw,1.15rem); color:var(--cream); font-weight:600; }
+  .pooja-line{ margin-top:.5rem; font-size: clamp(.95rem,2.4vw,1.05rem); color:var(--cream-dim); max-width:34ch; margin-inline:auto; }
+  .pooja-mice{ position:absolute; bottom:-6px; width:64px; height:auto; }
+  .pooja-mice.left{ left:-4px; }
+  .pooja-mice.right{ right:-4px; transform:scaleX(-1); }
+
+  /* ================= DIYA PAGE ================= */
+  .altar{ position:relative; width:100%; max-width:320px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+  .rangoli{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(300px,84vw); height:min(300px,84vw); z-index:1; animation: spin 140s linear infinite; opacity:.8; }
+  .diya-btn{ background:none; padding:0; position:relative; z-index:2; }
+  .diya-svg{ width:clamp(160px,42vw,220px); position:relative; z-index:2; }
+  .flame{ transform-origin:50% 100%; opacity:0; transition: opacity .5s ease; }
+  .flame.lit{ opacity:1; animation: flicker 1.5s ease-in-out infinite; }
+  @keyframes flicker{
+    0%,100%{ transform: scaleY(1) scaleX(1) rotate(0deg); filter: drop-shadow(0 0 10px rgba(255,160,70,.9)) drop-shadow(0 0 24px rgba(255,110,30,.6)); }
+    25%{ transform: scaleY(1.08) scaleX(.95) rotate(-2deg); }
+    50%{ transform: scaleY(.94) scaleX(1.05) rotate(1.5deg); filter: drop-shadow(0 0 15px rgba(255,175,85,1)) drop-shadow(0 0 30px rgba(255,110,30,.7)); }
+    75%{ transform: scaleY(1.05) scaleX(.97) rotate(-1deg); }
+  }
+  .diya-glow{ position:absolute; bottom:8%; left:50%; transform:translateX(-50%); width:210px; height:210px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,160,70,.55), transparent 70%); opacity:0; transition: opacity .8s ease; z-index:1; filter: blur(4px); }
+  .diya-glow.lit{ opacity:1; animation: glowPulse 2.2s ease-in-out infinite; }
+  @keyframes glowPulse{ 0%,100%{ transform:translateX(-50%) scale(1);} 50%{ transform:translateX(-50%) scale(1.12);} }
+  .diya-caption{ margin-top:1.4rem; font-size:1rem; color:var(--cream-dim); position:relative; z-index:2; }
+  .blessing-msg{ margin-top:1.3rem; max-width:34ch; font-family:'Rozha One',serif; font-size:clamp(1rem,2.6vw,1.2rem); color:var(--gold-bright); line-height:1.65;
+    opacity:0; transform: translateY(12px); transition: opacity .9s var(--ease-soft), transform .9s var(--ease-soft); margin-inline:auto; position:relative; z-index:2; }
+  .blessing-msg.show{ opacity:1; transform:translateY(0); }
+
+  /* ================= CLOSING PAGE ================= */
+  .countdown{ display:flex; gap:clamp(.5rem,2.5vw,1rem); justify-content:center; margin:1.3rem 0 1.8rem; flex-wrap:wrap; }
+  .cd-unit{ background: linear-gradient(160deg, rgba(224,172,63,.14), rgba(224,172,63,.03)); border:1px solid rgba(224,172,63,.4); border-radius:11px; padding:.7rem clamp(.65rem,3vw,1.1rem); min-width:62px; }
+  .cd-num{ font-family:'Rozha One',serif; font-size:clamp(1.3rem,4.2vw,1.9rem); color:var(--gold-bright); }
+  .cd-label{ font-size:.66rem; letter-spacing:.04em; color:var(--cream-dim); margin-top:.15rem; }
+  .cal-links{ display:flex; gap:.7rem; justify-content:center; margin-top:.6rem; flex-wrap:wrap; }
+  .cal-btn{ padding:.6rem 1rem; border-radius:999px; border:1px solid rgba(224,172,63,.5); font-size:.82rem; font-weight:600; display:inline-flex; align-items:center; gap:.45rem; transition: background .3s, transform .3s; }
+  .cal-btn:hover{ background: rgba(224,172,63,.12); transform: translateY(-2px); }
+  .cal-btn svg{ width:15px; height:15px; }
+  .footer-note{ text-align:center; margin-top:2rem; color:var(--gold-dim); font-size:.85rem; font-family:'Rozha One',serif; padding-bottom: 1.6rem; }
+</style>
+</head>
+<body>
+<audio id="bgMusic" src="flute-music.mp3" loop preload="auto"></audio>
+
+<!-- shared icon defs, referenced by <use> everywhere below -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbead0"/><stop offset="1" stop-color="#e6cf9c"/>
+    </linearGradient>
+    <linearGradient id="earGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6d585"/><stop offset="1" stop-color="#e0ac3f"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6d585"/><stop offset="1" stop-color="#e8722a"/>
+    </linearGradient>
+
+    <symbol id="ganeshaCrest" viewBox="0 0 200 220">
+      <g class="ganesha-icon">
+        <path class="g-ear" d="M46 98c-23 -7 -36 9 -34 29c2 18 16 30 35 29c-10 -16 -12 -41 -1 -58Z"/>
+        <path class="g-ear" d="M154 98c23 -7 36 9 34 29c-2 18 -16 30 -35 29c10 -16 12 -41 1 -58Z"/>
+        <ellipse class="g-head" cx="100" cy="120" rx="46" ry="48"/>
+        <path class="g-crown" d="M69 80c3 -23 20 -36 31 -36s28 13 31 36c-10 -6 -21 -10 -31 -10s-21 4 -31 10Z"/>
+        <circle cx="100" cy="40" r="6" fill="url(#crownGrad)" stroke="#c98a2e" stroke-width="1"/>
+        <ellipse class="g-tilak" cx="100" cy="90" rx="3.4" ry="6.5"/>
+        <path class="g-eye" d="M77 109q7 -7 15 0q-7 7 -15 0Z"/>
+        <path class="g-eye" d="M108 109q7 -7 15 0q-7 7 -15 0Z"/>
+        <path class="g-trunk" d="M100 130c-3 10 -15 14 -15 27c0 10 8 17 17 15c-11 -4 -13 -13 -8 -21c6 4 15 2 17 -7c-9 2 -13 -5 -11 -14Z"/>
+        <path class="g-tusk" d="M118 134c4 4 4 11 0 15c6 -3 9 -9 6 -15c-2 -3 -4 -3 -6 0Z"/>
+      </g>
+    </symbol>
+
+    <symbol id="mouseMotif" viewBox="0 0 100 70">
+      <ellipse cx="54" cy="44" rx="27" ry="17"/>
+      <circle cx="25" cy="30" r="14"/>
+      <circle cx="15" cy="19" r="6"/>
+      <circle cx="36" cy="20" r="6"/>
+      <path d="M81 42c14 3 23 13 19 21c-3 6 -10 4 -10 -2c2 -8 -3 -13 -9 -17Z"/>
+      <circle cx="20" cy="29" r="1.6" fill="#1c0705"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="bg-wash"></div>
+<div class="bg-video-wrap" id="bgVideoWrap">
+  <video id="bgVideo" src="bg-video.mp4" muted loop playsinline preload="auto"></video>
+</div>
+<canvas id="petal-canvas" aria-hidden="true"></canvas>
+
+<!-- ================= GATE SCREEN ================= -->
+<div class="gate-screen" id="gateScreen">
+  <div class="gate-stage" id="gateStage" style="position:relative;width:100%;height:100%;overflow:hidden;">
+    <div class="gate-glow"></div>
+    <div class="pillar pl"></div>
+    <div class="pillar pr"></div>
+
+    <div class="gate-top-frame">
+      <svg viewBox="0 0 800 110" fill="none">
+        <path d="M0 26 Q200 66 400 30 Q600 66 800 26" stroke="#c98a2e" stroke-width="2" fill="none" opacity=".8"/>
+        <g fill="#ff9a3d">
+          <circle cx="40" cy="30" r="10"/><circle cx="90" cy="42" r="8"/><circle cx="140" cy="30" r="10"/><circle cx="190" cy="44" r="8"/>
+          <circle cx="240" cy="32" r="10"/><circle cx="290" cy="45" r="8"/><circle cx="340" cy="35" r="9"/><circle cx="390" cy="46" r="8"/>
+          <circle cx="410" cy="46" r="8"/><circle cx="460" cy="35" r="9"/><circle cx="510" cy="45" r="8"/><circle cx="560" cy="32" r="10"/>
+          <circle cx="610" cy="44" r="8"/><circle cx="660" cy="30" r="10"/><circle cx="710" cy="42" r="8"/><circle cx="760" cy="30" r="10"/>
+        </g>
+        <g fill="#f6d585">
+          <circle cx="40" cy="30" r="4"/><circle cx="140" cy="30" r="4"/><circle cx="240" cy="32" r="4"/><circle cx="340" cy="35" r="4"/>
+          <circle cx="460" cy="35" r="4"/><circle cx="560" cy="32" r="4"/><circle cx="660" cy="30" r="4"/><circle cx="760" cy="30" r="4"/>
+        </g>
+        <g fill="#5c8a3c">
+          <path d="M65 34 l12 10 -4 -14z"/><path d="M165 34 l12 10 -4 -14z"/><path d="M265 36 l12 10 -4 -14z"/>
+          <path d="M435 39 l12 10 -4 -14z"/><path d="M535 36 l12 10 -4 -14z"/><path d="M635 34 l12 10 -4 -14z"/><path d="M735 34 l12 10 -4 -14z"/>
+        </g>
+        <g stroke="#c98a2e" stroke-width="1.5">
+          <line x1="230" y1="50" x2="230" y2="72"/><line x1="400" y1="60" x2="400" y2="86"/><line x1="570" y1="50" x2="570" y2="72"/>
+        </g>
+        <g fill="#e0ac3f">
+          <path d="M222 72c0 8 16 8 16 0z"/><circle cx="230" cy="76" r="2.4" fill="#3a1205"/>
+          <path d="M392 86c0 8 16 8 16 0z"/><circle cx="400" cy="90" r="2.4" fill="#3a1205"/>
+          <path d="M562 72c0 8 16 8 16 0z"/><circle cx="570" cy="76" r="2.4" fill="#3a1205"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="gate-door left">
+      <div class="door-face"></div>
+      <div class="door-studs"></div>
+      <svg class="door-jali" viewBox="0 0 100 140" fill="none">
+        <path d="M50 6C30 20 20 42 20 68c0 30 14 48 30 60 16-12 30-30 30-60 0-26-10-48-30-62Z" stroke="#f6d585" stroke-width="1.4" opacity=".8"/>
+        <path d="M28 40 L72 96 M72 40 L28 96 M50 24 V116 M20 68 H80" stroke="#f6d585" stroke-width=".7" opacity=".45"/>
+        <circle cx="50" cy="68" r="16" stroke="#f6d585" stroke-width="1" opacity=".55"/>
+      </svg>
+      <div class="door-handle">
+        <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#f6d585" stroke-width="3" fill="rgba(224,172,63,.25)"/><circle cx="20" cy="20" r="4" fill="#e0ac3f"/></svg>
+      </div>
+    </div>
+    <div class="gate-door right">
+      <div class="door-face"></div>
+      <div class="door-studs"></div>
+      <svg class="door-jali" viewBox="0 0 100 140" fill="none">
+        <path d="M50 6C30 20 20 42 20 68c0 30 14 48 30 60 16-12 30-30 30-60 0-26-10-48-30-62Z" stroke="#f6d585" stroke-width="1.4" opacity=".8"/>
+        <path d="M28 40 L72 96 M72 40 L28 96 M50 24 V116 M20 68 H80" stroke="#f6d585" stroke-width=".7" opacity=".45"/>
+        <circle cx="50" cy="68" r="16" stroke="#f6d585" stroke-width="1" opacity=".55"/>
+      </svg>
+      <div class="door-handle">
+        <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#f6d585" stroke-width="3" fill="rgba(224,172,63,.25)"/><circle cx="20" cy="20" r="4" fill="#e0ac3f"/></svg>
+      </div>
+    </div>
+
+    <div class="gate-clasp">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="28" stroke="#f6d585" stroke-width="1.4" opacity=".6"/>
+        <path d="M32 8c-9 6-14 14-14 22 0 10 7 16 14 20 7-4 14-10 14-20 0-8-5-16-14-22Z" fill="#ff9a3d" opacity=".95"/>
+        <circle cx="32" cy="30" r="5" fill="#f6d585"/>
+      </svg>
+    </div>
+
+    <div class="gate-content">
+      <svg class="gate-crest" viewBox="0 0 200 220"><use href="#ganeshaCrest"/></svg>
+      <h1 class="gate-title">The Jethva Family Cordially Invites You</h1>
+      <p class="gate-sub">Ganpati Bappa Morya — join us as we welcome Lord Ganesha home</p>
+      <button class="gate-btn" id="openGateBtn">
+        <span>Tap to Open the Gate</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="gate-hint">Ganpati Bappa Morya, Mangal Murti Morya</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= BOOK CONTAINER ================= -->
+<div class="book-container" id="bookContainer">
+
+  <!-- PAGE 0: WELCOME -->
+  <section class="book-page" data-i="0">
+    <div class="page-inner">
+      <div class="shloka-columns">
+        <p class="shloka-hindi">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ<br>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा</p>
+        <div class="shloka-divider"></div>
+        <p class="shloka">Vakratunda Mahakaya<br>Suryakoti Samaprabha<br>Nirvighnam Kuru Me Deva<br>Sarva-Kaaryeshu Sarvada</p>
+      </div>
+      <p class="shloka-sub">O Lord of the curved trunk and mighty form, radiant as a million suns — remove all obstacles from my endeavours, always.</p>
+    </div>
+  </section>
+
+  <!-- PAGE 1: ENVELOPE / INVITATION -->
+  <section class="book-page" data-i="1">
+    <div class="page-inner">
+      <div class="pill"><span class="dot"></span>The Invitation</div>
+      <div class="envelope-zone">
+        <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open the invitation envelope">
+          <div class="envelope-body"></div>
+          <div class="wax-seal"><svg viewBox="0 0 200 220" width="26" height="29"><use href="#ganeshaCrest"/></svg></div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-tap">Tap to open</div>
+        </div>
+        <div class="card-unfold" id="cardUnfold">
+          <div class="fold-panel top">
+            <svg class="fold-crest" viewBox="0 0 200 220"><use href="#ganeshaCrest"/></svg>
+            <h2>Ganesh Chaturthi Celebration</h2>
+            <div class="fold-host">Hosted by The Jethva Family</div>
+          </div>
+          <div class="fold-panel bottom">
+            <div class="fold-rows">
+              <div class="fold-row">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M4 8h16M6 8v10a2 2 0 002 2h8a2 2 0 002-2V8" stroke="currentColor" stroke-width="1.6"/></svg>
+                <div><div class="label">Sthapana &amp; Aarthi</div><div class="value">Monday, 14th September 2026<small>Sthapana Muhurat: 11:02 AM – 1:31 PM · Evening Aarthi at 7:30 PM</small></div></div>
+              </div>
+              <div class="fold-row">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16l6-3 6 3 4-2V2l-4 2-6-3-6 3z" stroke="currentColor" stroke-width="1.6"/></svg>
+                <div><div class="label">Visarjan</div><div class="value">Friday, 25th September 2026<small>Anant Chaturdashi · Procession begins 5:00 PM</small></div></div>
+              </div>
+              <div class="fold-row">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.2 7-12.5A7 7 0 105 9.5C5 14.8 12 22 12 22z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+                <div><div class="label">Venue</div><div class="value">Jethva Niwas, Plot 14, Shree Ganesh Society<br>Malad West, Mumbai 400064</div></div>
+              </div>
+            </div>
+            <a class="directions-btn" href="https://www.google.com/maps/search/?api=1&query=Jethva+Niwas+Malad+West+Mumbai" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              Get Directions
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">scroll</div>
+  </section>
+
+  <!-- PAGE 2: SATYANARAYAN POOJA -->
+  <section class="book-page" data-i="2">
+    <div class="page-inner pooja-card">
+      <svg class="pooja-mice left mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
+      <svg class="pooja-mice right mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
+      <div class="pill"><span class="dot"></span>Day 4 · Special</div>
+      <h2>Satyanarayan Pooja</h2>
+      <div class="pooja-time">Thursday, 17th September · 10:00 AM onwards</div>
+      <p class="pooja-line">Do join us for the pooja and prasad</p>
+    </div>
+    <div class="scroll-hint">scroll</div>
+  </section>
+
+  <!-- PAGE 3: DIYA -->
+  <section class="book-page" data-i="3">
+    <div class="page-inner">
+      <div class="pill"><span class="dot"></span>Aarti · An Offering of Light</div>
+      <h2 style="font-size:clamp(1.3rem,3.6vw,1.8rem); color:var(--gold-bright); margin-bottom:1.4rem;">Light a Diya for Bappa</h2>
+      <div class="altar">
+        <svg class="rangoli" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <circle cx="100" cy="100" r="94" stroke="#9a7226" stroke-width="1" opacity=".35"/>
+          <circle cx="100" cy="100" r="76" stroke="#e0ac3f" stroke-width="1" stroke-dasharray="2 6" opacity=".5"/>
+          <circle cx="100" cy="100" r="58" stroke="#9a7226" stroke-width="1" opacity=".3"/>
+          <g fill="#ff9a3d" opacity=".5">
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(45 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(90 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(135 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(180 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(225 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(270 100 100)"/>
+            <path d="M100 6c6 10 6 18 0 24c-6 -6 -6 -14 0 -24Z" transform="rotate(315 100 100)"/>
+          </g>
+        </svg>
+        <div class="diya-glow" id="diyaGlow"></div>
+        <button class="diya-btn" id="diyaBtn" aria-label="Light the diya">
+          <svg class="diya-svg" viewBox="0 0 200 160" fill="none">
+            <g class="flame" id="flame">
+              <path d="M100 28c9 15 15 23 15 35 0 11-7 19-15 19s-15-8-15-19c0-12 6-20 15-35Z" fill="url(#flameGrad)"/>
+              <path d="M100 45c4 8 7 12 7 18 0 6-3 10-7 10s-7-4-7-10c0-6 3-10 7-18Z" fill="#fff3c4" opacity=".85"/>
+            </g>
+            <defs>
+              <linearGradient id="flameGrad" x1="100" y1="28" x2="100" y2="82" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#fff3c4"/><stop offset=".45" stop-color="#ffb347"/><stop offset="1" stop-color="#ff6b1a"/>
+              </linearGradient>
+              <radialGradient id="clayGrad" cx="35%" cy="30%" r="75%">
+                <stop offset="0" stop-color="#e8935a"/><stop offset="1" stop-color="#a8501f"/>
+              </radialGradient>
+            </defs>
+            <ellipse cx="100" cy="98" rx="58" ry="20" fill="url(#clayGrad)" stroke="#6b2c10" stroke-width="1.5"/>
+            <path d="M42 98c0 16 26 28 58 28s58-12 58-28" fill="url(#clayGrad)" stroke="#6b2c10" stroke-width="1.5"/>
+            <g fill="#fbead0" opacity=".7">
+              <circle cx="62" cy="100" r="2"/><circle cx="80" cy="106" r="2"/><circle cx="100" cy="108" r="2"/><circle cx="120" cy="106" r="2"/><circle cx="138" cy="100" r="2"/>
+            </g>
+            <ellipse cx="100" cy="86" rx="34" ry="9" fill="#c96a30" stroke="#6b2c10" stroke-width="1.2"/>
+          </svg>
+        </button>
+        <div class="diya-caption" id="diyaCaption">Tap the diya to begin the aarti</div>
+        <p class="blessing-msg" id="blessingMsg">May Lord Ganesha remove every obstacle from your path and fill your home with wisdom, prosperity and joy.</p>
+      </div>
+    </div>
+    <div class="scroll-hint">scroll</div>
+  </section>
+
+  <!-- PAGE 4: COUNTDOWN + CALENDAR -->
+  <section class="book-page" data-i="4">
+    <div class="page-inner">
+      <div class="pill"><span class="dot"></span>Save the Date</div>
+      <h2 style="font-size:clamp(1.3rem,3.6vw,1.8rem); color:var(--gold-bright);">Counting Down to Ganpati Bappa</h2>
+      <div class="countdown" id="countdown">
+        <div class="cd-unit"><div class="cd-num" id="cdDays">--</div><div class="cd-label">Days</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdHours">--</div><div class="cd-label">Hours</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdMins">--</div><div class="cd-label">Mins</div></div>
+        <div class="cd-unit"><div class="cd-num" id="cdSecs">--</div><div class="cd-label">Secs</div></div>
+      </div>
+      <div class="cal-links">
+        <a class="cal-btn" id="gcalBtn" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/></svg>
+          Add to Google Calendar
+        </a>
+        <a class="cal-btn" id="icsBtn" href="#" download="ganesh-chaturthi.ics">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download .ics
+        </a>
+      </div>
+      <div class="footer-note">Ganpati Bappa Morya, Mangal Murti Morya — with love, The Jethva Family</div>
+    </div>
+  </section>
+
+  <div class="book-nav" id="bookNav"></div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ============ PARTICLE SYSTEM ============ */
+  const canvas = document.getElementById("petal-canvas");
+  const ctx2d = canvas.getContext("2d");
+  let W, H, dpr;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.width = innerWidth * dpr; H = canvas.height = innerHeight * dpr;
+    canvas.style.width = innerWidth + "px"; canvas.style.height = innerHeight + "px";
+  }
+  resize(); window.addEventListener("resize", resize);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  class Dust {
+    constructor(){ this.reset(true); }
+    reset(initial){
+      this.x = Math.random() * W; this.y = initial ? Math.random() * H : H + 10;
+      this.r = (Math.random() * 1.6 + 0.5) * dpr; this.vy = -(Math.random() * 0.25 + 0.08) * dpr;
+      this.vx = (Math.random() - 0.5) * 0.15 * dpr; this.alpha = Math.random() * 0.5 + 0.15; this.tw = Math.random() * Math.PI * 2;
+    }
+    step(){ this.y += this.vy; this.x += this.vx + Math.sin(this.tw) * 0.15; this.tw += 0.02; if(this.y < -10) this.reset(false); }
+    draw(){ ctx2d.beginPath(); ctx2d.fillStyle = `rgba(246,213,133,${this.alpha * (0.6 + 0.4*Math.sin(this.tw))})`; ctx2d.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx2d.fill(); }
+  }
+  class Petal {
+    constructor(x, y){
+      this.x = x !== undefined ? x : Math.random()*W; this.y = y !== undefined ? y : -20;
+      this.size = (Math.random()*10 + 8) * dpr; this.vy = (Math.random()*0.9 + 0.6) * dpr; this.vx = (Math.random()-0.5) * 1.2 * dpr;
+      this.rot = Math.random()*Math.PI*2; this.vr = (Math.random()-0.5) * 0.06; this.sway = Math.random()*Math.PI*2; this.life = 1;
+      this.hue = Math.random() > 0.5 ? "#ff9a3d" : "#ffcf6b";
+    }
+    step(){ this.sway += 0.02; this.x += this.vx + Math.sin(this.sway) * 0.6 * dpr; this.y += this.vy; this.rot += this.vr; this.life -= 0.0016; }
+    draw(){
+      if(this.life <= 0) return;
+      ctx2d.save(); ctx2d.globalAlpha = Math.max(this.life, 0); ctx2d.translate(this.x, this.y); ctx2d.rotate(this.rot);
+      ctx2d.fillStyle = this.hue; ctx2d.beginPath(); ctx2d.ellipse(0, 0, this.size*0.55, this.size, 0, 0, Math.PI*2); ctx2d.fill(); ctx2d.restore();
+    }
+  }
+  let dustParticles = [], petals = [];
+  const DUST_COUNT = reduceMotion ? 0 : (innerWidth < 600 ? 26 : 46);
+  for(let i=0;i<DUST_COUNT;i++) dustParticles.push(new Dust());
+  function burstPetals(n, xRatio, yRatio){
+    if(reduceMotion) return;
+    const x = (xRatio !== undefined ? xRatio : 0.5) * innerWidth * dpr;
+    const y = (yRatio !== undefined ? yRatio : 0.3) * innerHeight * dpr;
+    for(let i=0;i<n;i++){
+      const p = new Petal(x + (Math.random()-0.5)*200*dpr, y + (Math.random()-0.5)*80*dpr);
+      p.vy = (Math.random()*1.4 + 0.4) * dpr; petals.push(p);
+    }
+    if(petals.length > 260) petals.splice(0, petals.length - 260);
+  }
+  function loop(){
+    ctx2d.clearRect(0,0,W,H);
+    dustParticles.forEach(d => { d.step(); d.draw(); });
+    petals.forEach(p => { p.step(); p.draw(); });
+    petals = petals.filter(p => p.life > 0 && p.y < H + 40);
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* ============ GATE ============ */
+  const gateScreen = document.getElementById("gateScreen");
+  const gateStage = document.getElementById("gateStage");
+  const openGateBtn = document.getElementById("openGateBtn");
+  const bookContainer = document.getElementById("bookContainer");
+  let gateOpened = false;
+
+  const bgMusic = document.getElementById("bgMusic");
+  const bgVideo = document.getElementById("bgVideo");
+  const bgVideoWrap = document.getElementById("bgVideoWrap");
+
+  openGateBtn.addEventListener("click", () => {
+    if(gateOpened) return;
+    gateOpened = true;
+    gateStage.classList.add("opened");
+    bgMusic.volume = 0.55;
+    bgMusic.play().catch(() => {});
+    bgVideo.play().catch(() => {});
+    bgVideoWrap.classList.add("playing");
+    burstPetals(60, 0.5, 0.45);
+    setTimeout(() => burstPetals(30, 0.3, 0.5), 200);
+    setTimeout(() => burstPetals(30, 0.7, 0.5), 350);
+    setTimeout(() => {
+      bookContainer.style.display = "block";
+      requestAnimationFrame(() => bookContainer.classList.add("visible"));
+      gateScreen.classList.add("fading");
+      const introInner = document.querySelector('.book-page[data-i="0"] .page-inner');
+      setTimeout(() => introInner.classList.add("show"), 500);
+      setTimeout(() => introInner.classList.remove("show"), 4600);
+      setTimeout(() => { if(current === 0) goNext(); }, 6100);
+    }, 950);
+    setTimeout(() => { gateScreen.style.display = "none"; }, 1650);
+  });
+
+  /* ============ BOOK PAGINATION ============ */
+  const pages = Array.from(document.querySelectorAll(".book-page"));
+  const total = pages.length;
+  let current = 0, animating = false;
+  const navWrap = document.getElementById("bookNav");
+  pages.forEach((_, i) => {
+    const d = document.createElement("button");
+    d.className = "book-dot" + (i === 0 ? " active" : "");
+    d.setAttribute("aria-label", "Go to page " + (i+1));
+    d.addEventListener("click", () => goToPage(i));
+    navWrap.appendChild(d);
+  });
+  const dots = Array.from(navWrap.children);
+
+  function updateDots(){ dots.forEach((d,i) => d.classList.toggle("active", i === current)); }
+
+  function layout(){
+    pages.forEach((p, i) => {
+      p.style.transition = "none";
+      p.style.transform = "rotateY(0deg)";
+      p.classList.remove("turning");
+      p.style.zIndex = i === current ? 5 : 1;
+      p.style.visibility = i === current ? "visible" : "hidden";
+      p.style.pointerEvents = i === current ? "auto" : "none";
+      void p.offsetWidth;
+      p.style.transition = "";
+    });
+    updateDots();
+  }
+
+  function goNext(){
+    if(animating || current >= total - 1) return;
+    animating = true;
+    const cur = pages[current], next = pages[current+1];
+    next.style.visibility = "visible"; next.style.zIndex = 4; next.style.pointerEvents = "none"; next.style.transform = "rotateY(0deg)";
+    cur.style.zIndex = 6; cur.style.pointerEvents = "none"; cur.style.transformOrigin = "left center";
+    cur.classList.add("turning");
+    void cur.offsetWidth;
+    cur.style.transform = "rotateY(-178deg)";
+    setTimeout(() => { current++; layout(); animating = false; }, 850);
+  }
+
+  function goPrev(){
+    if(animating || current <= 0) return;
+    animating = true;
+    const cur = pages[current], prev = pages[current-1];
+    prev.style.visibility = "visible"; prev.style.zIndex = 6; prev.style.transformOrigin = "left center"; prev.style.transform = "rotateY(-178deg)";
+    prev.classList.add("turning");
+    cur.style.zIndex = 4;
+    void prev.offsetWidth;
+    prev.style.transform = "rotateY(0deg)";
+    setTimeout(() => { current--; layout(); animating = false; }, 850);
+  }
+
+  function crossfadeTo(i){
+    if(animating) return;
+    animating = true;
+    const cur = pages[current], target = pages[i];
+    target.style.transition = "opacity .5s ease"; target.style.opacity = "0";
+    target.style.visibility = "visible"; target.style.zIndex = 5; target.style.transform = "rotateY(0deg)";
+    cur.style.zIndex = 1;
+    requestAnimationFrame(() => { target.style.opacity = "1"; });
+    setTimeout(() => {
+      target.style.transition = ""; target.style.opacity = "";
+      current = i; layout(); animating = false;
+    }, 520);
+  }
+
+  function goToPage(i){
+    if(i === current || animating) return;
+    if(i === current + 1) return goNext();
+    if(i === current - 1) return goPrev();
+    crossfadeTo(i);
+  }
+
+  function atBottom(el){ return el.scrollHeight - el.scrollTop - el.clientHeight < 6; }
+  function atTop(el){ return el.scrollTop < 6; }
+
+  let wheelCooldown = false;
+  window.addEventListener("wheel", (e) => {
+    if(bookContainer.style.display !== "block") return;
+    const page = pages[current];
+    if(e.deltaY > 12){
+      if(atBottom(page)){
+        e.preventDefault();
+        if(!wheelCooldown){ wheelCooldown = true; goNext(); setTimeout(() => wheelCooldown = false, 900); }
+      }
+    } else if(e.deltaY < -12){
+      if(atTop(page)){
+        e.preventDefault();
+        if(!wheelCooldown){ wheelCooldown = true; goPrev(); setTimeout(() => wheelCooldown = false, 900); }
+      }
+    }
+  }, { passive:false });
+
+  let touchStartY = 0;
+  window.addEventListener("touchstart", (e) => { touchStartY = e.touches[0].clientY; }, { passive:true });
+  window.addEventListener("touchend", (e) => {
+    if(bookContainer.style.display !== "block") return;
+    const page = pages[current];
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if(Math.abs(dy) < 55) return;
+    if(dy > 0 && atBottom(page)) goNext();
+    else if(dy < 0 && atTop(page)) goPrev();
+  }, { passive:true });
+
+  window.addEventListener("keydown", (e) => {
+    if(bookContainer.style.display !== "block") return;
+    if(e.key === "ArrowDown" || e.key === "PageDown"){ e.preventDefault(); goNext(); }
+    else if(e.key === "ArrowUp" || e.key === "PageUp"){ e.preventDefault(); goPrev(); }
+  });
+
+  layout();
+
+  /* ============ ENVELOPE ============ */
+  const envelope = document.getElementById("envelope");
+  const cardUnfold = document.getElementById("cardUnfold");
+  let envelopeOpened = false;
+  function openEnvelope(){
+    if(envelopeOpened) return;
+    envelopeOpened = true;
+    envelope.classList.add("open");
+    const rect = envelope.getBoundingClientRect();
+    burstPetals(24, (rect.left+rect.width/2)/innerWidth, rect.top/innerHeight);
+    // let the flap finish most of its arc before the card slides out, so the
+    // two motions read as one continuous gesture instead of colliding
+    setTimeout(() => {
+      envelope.classList.add("opening");
+      cardUnfold.classList.add("show");
+    }, 650);
+  }
+  envelope.addEventListener("click", openEnvelope);
+  envelope.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openEnvelope(); } });
+
+  /* ============ DIYA ============ */
+  const diyaBtn = document.getElementById("diyaBtn");
+  const flame = document.getElementById("flame");
+  const diyaGlow = document.getElementById("diyaGlow");
+  const diyaCaption = document.getElementById("diyaCaption");
+  const blessingMsg = document.getElementById("blessingMsg");
+  let diyaLit = false;
+  diyaBtn.addEventListener("click", () => {
+    if(diyaLit) return;
+    diyaLit = true;
+    flame.classList.add("lit"); diyaGlow.classList.add("lit");
+    diyaCaption.textContent = "Your light joins ours — blessed";
+    const rect = diyaBtn.getBoundingClientRect();
+    burstPetals(45, (rect.left + rect.width/2)/innerWidth, (rect.top)/innerHeight);
+    setTimeout(() => blessingMsg.classList.add("show"), 500);
+  });
+
+  /* ============ COUNTDOWN ============ */
+  const EVENT_DATE = new Date("2026-09-14T11:02:00+05:30");
+  const cdDays = document.getElementById("cdDays"), cdHours = document.getElementById("cdHours"), cdMins = document.getElementById("cdMins"), cdSecs = document.getElementById("cdSecs");
+  function updateCountdown(){
+    const diff = EVENT_DATE - new Date();
+    if(diff <= 0){ cdDays.textContent = cdHours.textContent = cdMins.textContent = cdSecs.textContent = "0"; return; }
+    const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+    cdDays.textContent = d; cdHours.textContent = String(h).padStart(2,"0"); cdMins.textContent = String(m).padStart(2,"0"); cdSecs.textContent = String(s).padStart(2,"0");
+  }
+  updateCountdown(); setInterval(updateCountdown, 1000);
+
+  /* ============ CALENDAR LINKS ============ */
+  const gcalBtn = document.getElementById("gcalBtn");
+  const icsBtn = document.getElementById("icsBtn");
+  // Sthapana muhurat (11:02) through evening aarthi + prasad (7:30 PM start, wraps ~9:00 PM)
+  const startStr = "20260914T110200", endStr = "20260914T210000";
+  const title = encodeURIComponent("Ganesh Chaturthi — The Jethva Family");
+  const details = encodeURIComponent("Sthapana & Aarthi at Jethva Niwas. Join us to welcome Lord Ganesha home.");
+  const location = encodeURIComponent("Jethva Niwas, Plot 14, Shree Ganesh Society, Malad West, Mumbai 400064");
+  gcalBtn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}`;
+  const icsContent = [
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Jethva Family//Ganesh Chaturthi//EN","BEGIN:VEVENT",
+    "UID:" + Date.now() + "@jethvafamily","DTSTART:" + startStr,"DTEND:" + endStr,
+    "SUMMARY:Ganesh Chaturthi — The Jethva Family",
+    "DESCRIPTION:Sthapana & Aarthi at Jethva Niwas. Join us to welcome Lord Ganesha home.",
+    "LOCATION:Jethva Niwas, Plot 14, Shree Ganesh Society, Malad West, Mumbai 400064",
+    "END:VEVENT","END:VCALENDAR"
+  ].join("\r\n");
+  let icsUrl = null;
+  icsBtn.addEventListener("click", () => {
+    if(icsUrl) URL.revokeObjectURL(icsUrl);
+    const blob = new Blob([icsContent], { type: "text/calendar" });
+    icsUrl = URL.createObjectURL(blob);
+    icsBtn.href = icsUrl;
+  });
+
+})();
+</script>
+</body>
+</html>

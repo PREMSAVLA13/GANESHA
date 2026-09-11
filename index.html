@@ -171,9 +171,10 @@
   .gate-door.left .door-face{ border-right:none; border-radius: 6px 90px 90px 6px / 6px 40px 40px 6px; }
   .gate-door.right .door-face{ border-left:none; border-radius: 90px 6px 6px 90px / 40px 6px 6px 40px; }
 
-  .door-jali{ position:absolute; top:14%; left:50%; transform:translateX(-50%); width:52%; opacity:.9; }
-  .gate-door.left .door-jali{ left:auto; right:20%; transform:none; }
-  .gate-door.right .door-jali{ left:20%; transform:none; }
+  .door-jali{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:52%; opacity:.96; }
+  .gate-door.left .door-jali{ left:auto; right:13%; transform:translateY(-50%); }
+  .gate-door.right .door-jali{ left:13%; transform:translateY(-50%); }
+  .door-jali img{ width:100%; height:auto; display:block; filter: drop-shadow(0 6px 20px rgba(0,0,0,.55)) drop-shadow(0 0 16px rgba(255,154,61,.3)); }
 
   .door-studs{ position:absolute; inset:16px; border-radius:inherit; pointer-events:none;
     background-image: radial-gradient(circle, rgba(246,213,133,.9) 1.6px, transparent 1.9px);
@@ -206,15 +207,20 @@
     transition: opacity .9s var(--ease-soft), transform .9s var(--ease-soft);
   }
   .gate-stage.opened .gate-content{ opacity:0; transform:translateY(18px); pointer-events:none; }
+  .gate-content::before{
+    content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(92vw,620px); height:min(70vh,460px); z-index:-1; pointer-events:none;
+    background: radial-gradient(ellipse at 50% 55%, rgba(15,4,3,.72), rgba(15,4,3,.35) 55%, transparent 78%);
+  }
 
-  .gate-crest{ width:52px; height:57px; margin-bottom:.7rem; }
+  .gate-crest{ width:52px; height:57px; margin-bottom:.7rem; filter: drop-shadow(0 3px 10px rgba(0,0,0,.7)); }
   .gate-title{
     font-size: clamp(1.9rem, 6vw, 3.2rem);
     color:var(--gold-bright);
-    text-shadow: 0 0 24px rgba(255,154,61,.35);
+    text-shadow: 0 3px 10px rgba(0,0,0,.92), 0 1px 3px rgba(0,0,0,.95), 0 0 28px rgba(255,154,61,.45);
     max-width:14ch;
   }
-  .gate-sub{ margin-top:.8rem; font-size: clamp(.95rem,2.4vw,1.1rem); color:var(--cream-dim); max-width:32ch; }
+  .gate-sub{ margin-top:.8rem; font-size: clamp(.95rem,2.4vw,1.1rem); color:var(--cream); text-shadow: 0 2px 8px rgba(0,0,0,.9); max-width:32ch; }
 
   .gate-btn{
     margin-top:2rem; padding:.9rem 2rem; border-radius:999px;
@@ -230,50 +236,65 @@
   @keyframes breathe{ 0%,100%{ box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 8px 24px rgba(255,154,61,.32);} 50%{ box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 8px 32px rgba(255,154,61,.55);} }
   .gate-hint{ margin-top:.85rem; font-size:.76rem; color:var(--gold-dim); }
 
-  /* ================= BOOK CONTAINER ================= */
-  .book-container{
+  /* ================= STORY SCROLL ================= */
+  .story-scroll{
     position:fixed; inset:0; z-index:10;
-    perspective: 2400px;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
     opacity:0; transition: opacity .8s var(--ease-soft);
     display:none;
+    scroll-snap-type: y mandatory;
+    perspective: 1400px;
   }
-  .book-container.visible{ opacity:1; }
+  .story-scroll.visible{ opacity:1; }
 
-  .book-page{
-    position:absolute; inset:0; width:100%; height:100%;
-    overflow-y:auto; -webkit-overflow-scrolling:touch;
-    backface-visibility:hidden;
-    will-change: transform;
+  .progress-rail{
+    position:fixed; top:0; left:0; right:0; height:3px; z-index:90;
+    background:rgba(0,0,0,.25); pointer-events:none;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--marigold), var(--gold-bright));
+  }
+
+  .story-section{
+    position:relative; width:100%; min-height:100vh; min-height:100dvh;
     display:flex; align-items:center; justify-content:center;
-    padding: clamp(1.5rem,5vw,3.5rem) clamp(1.25rem,6vw,3rem);
+    padding: clamp(1rem,4vh,2.25rem) clamp(1rem,5vw,2.5rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform, opacity, filter;
   }
-  /* soft shadow gradient during a page turn, like a real paper fold */
-  .book-page::before{
-    content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
-    background: linear-gradient(90deg, rgba(0,0,0,.35), transparent 12%, transparent 88%, rgba(0,0,0,.35));
-    opacity:0; transition: opacity .4s ease;
-  }
-  .book-page.turning::before{ opacity:1; }
   .page-inner{ position:relative; z-index:2; width:100%; max-width:640px; margin:0 auto; text-align:center; }
 
-  .book-nav{
-    position:fixed; z-index:80;
-    right: max(.9rem, env(safe-area-inset-right));
-    top:50%; transform:translateY(-50%);
-    display:flex; flex-direction:column; gap:.6rem;
+  /* content within each page cascades in once its section crosses the reveal threshold */
+  .page-inner > *{
+    opacity:0; transform:translateY(20px);
+    transition: opacity .65s var(--ease-soft), transform .65s var(--ease-soft);
+    pointer-events:none;
   }
-  @media (max-width:640px){
-    .book-nav{ right:auto; left:50%; top:auto; bottom: max(.8rem, env(safe-area-inset-bottom)); transform:translateX(-50%); flex-direction:row; }
+  .story-section.revealed .page-inner > *{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .page-inner > *:nth-child(1){ transition-delay:.05s; }
+  .page-inner > *:nth-child(2){ transition-delay:.16s; }
+  .page-inner > *:nth-child(3){ transition-delay:.27s; }
+  .page-inner > *:nth-child(4){ transition-delay:.38s; }
+  .page-inner > *:nth-child(5){ transition-delay:.49s; }
+  .page-inner > *:nth-child(6){ transition-delay:.6s; }
+
+  .explore-hint{
+    position:absolute; bottom: max(1.4rem, env(safe-area-inset-bottom));
+    left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:.3rem;
+    color:var(--gold-dim); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+    opacity:.75; z-index:5; pointer-events:none;
+    animation: hintFade 1.8s ease-in-out infinite;
   }
-  .book-dot{
-    width:9px; height:9px; border-radius:50%;
-    background: rgba(224,172,63,.35);
-    border:1px solid rgba(224,172,63,.6);
-    transition: background .3s, transform .3s;
-  }
-  .book-dot.active{ background: var(--marigold); transform:scale(1.3); }
+  .explore-hint svg{ width:14px; height:14px; animation: hintBob 1.6s ease-in-out infinite; }
+  @keyframes hintBob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(5px);} }
 
   /* ================= WELCOME PAGE ================= */
+
   .mandala-wrap{ position:relative; width:clamp(190px,40vw,260px); aspect-ratio:1; margin:0 auto 1.4rem; }
   .mandala-ring{ position:absolute; inset:0; border-radius:50%; border:1px solid rgba(224,172,63,.4); }
   .mandala-ring.r2{ inset:10px; animation:spin 60s linear infinite; }
@@ -291,13 +312,13 @@
   .shloka{
     font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:700;
     font-size:clamp(1.15rem,2.6vw,1.55rem); letter-spacing:.01em;
-    color:var(--gold-bright); line-height:1.4; max-width:20ch; margin:0; flex:0 1 auto;
+    color:var(--gold-bright); line-height:1.4; max-width:min(88vw,380px); margin:0; flex:0 1 auto;
     text-shadow: 0 2px 6px rgba(0,0,0,.85), 0 8px 30px rgba(0,0,0,.7);
   }
   .shloka-hindi{
     font-family:'Tiro Devanagari Sanskrit', serif; font-style:normal; font-weight:400;
     font-size:clamp(1.2rem,2.7vw,1.65rem); color:var(--gold-bright); line-height:1.55;
-    max-width:20ch; margin:0; flex:0 1 auto;
+    max-width:min(92vw,460px); margin:0; flex:0 1 auto;
     text-shadow: 0 2px 6px rgba(0,0,0,.85), 0 8px 30px rgba(0,0,0,.7);
   }
   .shloka-divider{
@@ -308,100 +329,158 @@
   @media (min-width:640px){ .shloka-divider{ display:block; } }
   .shloka-sub{
     margin-top:1.2rem; font-size:clamp(.78rem,1.8vw,.92rem); color:var(--cream);
-    font-style:italic; max-width:36ch; margin-inline:auto;
+    font-style:italic; max-width:min(90vw,460px); margin-inline:auto;
     text-shadow: 0 2px 8px rgba(0,0,0,.85);
   }
-  .book-page[data-i="0"] .page-inner{ opacity:0; transition: opacity 1.5s var(--ease-soft); position:relative; max-width:900px; }
-  .book-page[data-i="0"] .page-inner.show{ opacity:1; }
-  .book-page[data-i="0"] .page-inner::before{
+  .story-section[data-i="0"] .page-inner{ position:relative; max-width:900px; }
+  .story-section[data-i="0"] .page-inner::before{
     content:""; position:absolute; inset:-2.5rem -1.5rem; z-index:-1; border-radius:40px;
     background: radial-gradient(ellipse at 50% 50%, rgba(20,5,4,.6), transparent 72%);
   }
+  @media (max-height:640px){
+    .shloka, .shloka-hindi{ font-size:1rem; line-height:1.35; }
+    .shloka-columns{ gap:.7rem; }
+    .shloka-sub{ margin-top:.6rem; font-size:.72rem; }
+    .story-section[data-i="0"]{ padding-top:1rem; padding-bottom:1rem; }
+  }
 
   /* ================= ENVELOPE PAGE ================= */
-  .envelope-zone{ position:relative; min-height:440px; display:flex; align-items:center; justify-content:center; }
+  .envelope-zone{ position:relative; min-height:clamp(300px,50vh,440px); display:flex; align-items:center; justify-content:center; padding-top:2rem; perspective:1100px; }
+
+  .envelope-toran{ position:absolute; top:0; left:50%; transform:translateX(-50%); width:min(280px,78vw); z-index:2; pointer-events:none; }
+  .envelope-toran svg{ width:100%; display:block; }
+
   .envelope{
     position:relative; width:min(320px,84vw); aspect-ratio:16/10.5;
     perspective: 1000px;
     cursor:pointer;
-    transition: opacity .6s ease, transform .6s var(--ease-soft);
+    transition: opacity .7s var(--ease-soft), transform .7s var(--ease-soft);
   }
-  .envelope.opening{ opacity:0; transform:scale(.9) translateY(-6px); pointer-events:none; }
+  .envelope.opening{ opacity:0; transform:scale(.88) translateY(-10px); pointer-events:none; }
   .envelope-body{
-    position:absolute; inset:0; border-radius:10px;
-    background: linear-gradient(160deg, #e8cf9e, #d8b779 60%, #cba766);
-    box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(58,26,10,.25);
+    position:absolute; inset:0; border-radius:12px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 3px, transparent 3px 8px),
+      linear-gradient(160deg, var(--maroon-light) 0%, var(--maroon) 55%, var(--maroon-deep) 100%);
+    box-shadow: 0 20px 46px rgba(0,0,0,.55), inset 0 0 0 1px rgba(224,172,63,.55), inset 0 0 24px rgba(0,0,0,.4);
+    border:1px solid rgba(224,172,63,.35);
   }
   .envelope-body::before{
     content:""; position:absolute; left:0; right:0; bottom:0; height:62%;
-    background: linear-gradient(160deg, #e2c58e, #cba766);
+    background: linear-gradient(160deg, var(--maroon) 0%, var(--maroon-deep) 100%);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    border-top:1px solid rgba(58,26,10,.15);
+    border-top:1px solid rgba(224,172,63,.2);
+  }
+  .envelope-body::after{
+    content:""; position:absolute; inset:6px; border-radius:8px;
+    border:1px solid rgba(224,172,63,.28); pointer-events:none;
   }
   .envelope-flap{
     position:absolute; top:0; left:0; right:0; height:60%;
-    background: linear-gradient(160deg, #f0dcae, #dcbd82);
+    background: linear-gradient(160deg, var(--maroon-light) 0%, var(--maroon) 60%, var(--maroon-deep) 100%);
     clip-path: polygon(0 0, 100% 0, 50% 92%);
     transform-origin: top center;
     transform-style: preserve-3d;
     backface-visibility: hidden;
-    transition: transform 1.1s var(--ease-soft);
+    transition: transform 1.15s cubic-bezier(.5,-.15,.3,1.35);
     z-index:3;
-    box-shadow: 0 6px 14px rgba(0,0,0,.25);
+    box-shadow: inset 0 0 0 1.5px rgba(224,172,63,.5), 0 6px 14px rgba(0,0,0,.35);
     border-radius:8px 8px 0 0;
+    display:flex; align-items:center; justify-content:center; padding-bottom:22%;
   }
+  .flap-crest{ width:30px; height:33px; color:var(--gold); opacity:.4; }
   .envelope.open .envelope-flap{ transform: rotateX(-180deg); }
   .wax-seal{
     position:absolute; top:52%; left:50%; transform:translate(-50%,-50%);
-    width:52px; height:52px; border-radius:50%;
+    width:62px; height:62px; border-radius:50%;
     background: radial-gradient(circle at 35% 30%, var(--marigold), var(--marigold-deep) 75%);
-    box-shadow: 0 4px 10px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.18);
     display:flex; align-items:center; justify-content:center;
     z-index:4;
-    transition: opacity .4s ease, transform .4s ease;
+    transition: opacity .35s ease, transform .35s ease;
+    animation: sealPulse 2.6s ease-in-out infinite;
   }
-  .envelope.open .wax-seal{ opacity:0; transform:translate(-50%,-50%) scale(.6); }
-  .wax-seal svg{ width:28px; height:31px; }
+  .wax-seal::after{
+    content:""; position:absolute; inset:-7px; border-radius:50%;
+    border:1px dashed rgba(246,213,133,.55);
+  }
+  @keyframes sealPulse{
+    0%,100%{ box-shadow: 0 4px 10px rgba(0,0,0,.45), 0 0 0 rgba(255,154,61,0), inset 0 0 0 2px rgba(255,255,255,.18); }
+    50%{ box-shadow: 0 4px 16px rgba(0,0,0,.4), 0 0 20px rgba(255,154,61,.6), inset 0 0 0 2px rgba(255,255,255,.18); }
+  }
+  .envelope.open .wax-seal{ opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(25deg); animation:none; }
+  .wax-seal svg{ width:32px; height:35px; }
   .envelope-tap{
-    position:absolute; bottom:-2.4rem; left:50%; transform:translateX(-50%);
-    font-size:.85rem; color:var(--gold-dim); white-space:nowrap;
+    position:absolute; bottom:-2.9rem; left:50%; transform:translateX(-50%);
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.3rem .85rem; border-radius:999px;
+    background:rgba(0,0,0,.25); border:1px solid rgba(224,172,63,.4);
+    font-size:.78rem; color:var(--gold-bright); white-space:nowrap;
     transition: opacity .4s ease;
+    animation: tapBounce 2s ease-in-out infinite;
   }
+  @keyframes tapBounce{ 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(3px);} }
   .envelope.open .envelope-tap{ opacity:0; }
 
+  .card-glow{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(500px,96vw); height:min(500px,96vw); z-index:1; pointer-events:none;
+    background: radial-gradient(circle, rgba(255,154,61,.4), transparent 68%);
+    opacity:0;
+  }
+  .card-glow.flash{ animation: cardFlash 1.1s var(--ease-soft); }
+  @keyframes cardFlash{ 0%{ opacity:0; } 35%{ opacity:1; } 100%{ opacity:0; } }
+
   .card-unfold{
-    position:absolute; inset:0; margin:auto;
+    position:absolute; inset:0; margin:auto; z-index:2;
     width:min(420px,92vw); max-width:92vw;
     height:fit-content;
-    opacity:0; transform:translateY(16px);
+    transform-origin: center 85%;
+    opacity:0; transform: translateY(46%) scale(.4) rotateX(28deg) rotate(-5deg);
     pointer-events:none;
-    transition: opacity .7s ease, transform .7s var(--ease-soft);
+    filter: drop-shadow(0 18px 34px rgba(0,0,0,.55));
   }
-  .card-unfold.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .card-unfold.show{
+    animation: cardPullOut 1.15s cubic-bezier(.32,.78,.24,1.08) forwards;
+    pointer-events:auto;
+  }
+  @keyframes cardPullOut{
+    0%{ opacity:0; transform: translateY(46%) scale(.4) rotateX(28deg) rotate(-5deg); }
+    12%{ opacity:1; }
+    50%{ opacity:1; transform: translateY(-6%) scale(1.06) rotateX(-6deg) rotate(2.5deg); }
+    72%{ transform: translateY(-11%) scale(.98) rotateX(2deg) rotate(-1.2deg); }
+    88%{ transform: translateY(-8%) scale(1.015) rotateX(-1deg) rotate(.6deg); }
+    100%{ opacity:1; transform: translateY(-9%) scale(1) rotateX(0deg) rotate(0deg); }
+  }
   .fold-panel{
     background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 25%),
                 linear-gradient(160deg,#f2e3bf,#e6cf9c);
-    color:var(--ink); border-radius:12px; padding: 1.4rem 1.5rem;
+    color:var(--ink); border-radius:12px; padding: 1.1rem 1.3rem;
     box-shadow: 0 16px 40px rgba(0,0,0,.4);
     text-align:center;
   }
-  .fold-panel.top{ position:relative; z-index:2; }
+  .fold-panel.top{
+    position:relative; z-index:2;
+    background: linear-gradient(165deg, var(--maroon-light), var(--maroon) 60%, var(--maroon-deep));
+    box-shadow: 0 16px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(224,172,63,.4);
+  }
   .fold-panel.bottom{
     position:relative; z-index:1; margin-top:-8px;
     text-align:left;
     border-radius:0 0 12px 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.4), inset 0 0 0 1px rgba(224,172,63,.25);
   }
-  .fold-crest{ width:34px; height:37px; margin:0 auto .6rem; color:var(--maroon); }
-  .fold-panel.top h2{ font-size:clamp(1.4rem,4vw,1.9rem); color:var(--maroon); margin:.1rem 0; }
-  .fold-host{ font-family:'Rozha One',serif; color:var(--marigold-deep); font-size:clamp(1rem,2.6vw,1.25rem); }
-  .fold-rows{ display:flex; flex-direction:column; gap:.9rem; }
-  .fold-row{ display:flex; gap:.75rem; align-items:flex-start; }
-  .fold-row svg{ width:19px; height:19px; flex-shrink:0; margin-top:.1rem; color:var(--maroon-light); }
-  .fold-row .label{ font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:#8a6a24; }
-  .fold-row .value{ font-size:.95rem; line-height:1.45; }
-  .fold-row .value small{ display:block; color:#6b5638; font-size:.8rem; margin-top:.1rem; }
+  .fold-crest{ width:30px; height:33px; margin:0 auto .4rem; color:var(--gold-bright); filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+  .fold-panel.top h2{ font-family:'Rozha One',serif; font-size:clamp(1.25rem,3.6vw,1.7rem); color:var(--gold-bright); margin:.1rem 0; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+  .fold-host{ font-family:'Rozha One',serif; color:var(--marigold); font-size:clamp(.95rem,2.4vw,1.15rem); }
+  .fold-rows{ display:flex; flex-direction:column; gap:.65rem; }
+  .fold-row{ display:flex; gap:.7rem; align-items:flex-start; }
+  .fold-row svg{ width:17px; height:17px; flex-shrink:0; margin-top:.1rem; color:var(--maroon-light); }
+  .fold-row .label{ font-weight:700; font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:#8a6a24; }
+  .fold-row .value{ font-size:.88rem; line-height:1.35; }
+  .fold-row .value small{ display:block; color:#6b5638; font-size:.75rem; margin-top:.1rem; }
   .directions-btn{
-    margin-top:1.2rem; width:100%; padding:.8rem 1.1rem; border-radius:9px;
+    margin-top:.9rem; width:100%; padding:.65rem 1rem; border-radius:9px;
     background: linear-gradient(135deg, var(--maroon), var(--maroon-light));
     color:var(--cream); font-weight:700;
     display:flex; align-items:center; justify-content:center; gap:.55rem;
@@ -412,19 +491,17 @@
   .directions-btn svg{ width:16px; height:16px; }
 
   /* ================= POOJA DAY PAGE ================= */
-  .pooja-card{ padding: clamp(1.6rem,5vw,2.2rem) clamp(1rem,5vw,2rem); position:relative; }
-  .pooja-card h2{ font-size: clamp(1.7rem,5vw,2.4rem); color:var(--gold-bright); margin:.3rem 0 .9rem; }
   .pooja-time{ font-size: clamp(1rem,2.6vw,1.15rem); color:var(--cream); font-weight:600; }
   .pooja-line{ margin-top:.5rem; font-size: clamp(.95rem,2.4vw,1.05rem); color:var(--cream-dim); max-width:34ch; margin-inline:auto; }
-  .pooja-mice{ position:absolute; bottom:-6px; width:64px; height:auto; }
-  .pooja-mice.left{ left:-4px; }
-  .pooja-mice.right{ right:-4px; transform:scaleX(-1); }
+  .pooja-mice{ position:absolute; bottom:-4px; width:42px; height:auto; opacity:.85; }
+  .pooja-mice.left{ left:-2px; }
+  .pooja-mice.right{ right:-2px; transform:scaleX(-1); }
 
   /* ================= DIYA PAGE ================= */
   .altar{ position:relative; width:100%; max-width:320px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
-  .rangoli{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(300px,84vw); height:min(300px,84vw); z-index:1; animation: spin 140s linear infinite; opacity:.8; }
+  .rangoli{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(300px,84vw,42vh); height:min(300px,84vw,42vh); z-index:1; animation: spin 140s linear infinite; opacity:.8; }
   .diya-btn{ background:none; padding:0; position:relative; z-index:2; }
-  .diya-svg{ width:clamp(160px,42vw,220px); position:relative; z-index:2; }
+  .diya-svg{ width:clamp(150px, min(38vw,30vh), 220px); position:relative; z-index:2; }
   .flame{ transform-origin:50% 100%; opacity:0; transition: opacity .5s ease; }
   .flame.lit{ opacity:1; animation: flicker 1.5s ease-in-out infinite; }
   @keyframes flicker{
@@ -433,14 +510,47 @@
     50%{ transform: scaleY(.94) scaleX(1.05) rotate(1.5deg); filter: drop-shadow(0 0 15px rgba(255,175,85,1)) drop-shadow(0 0 30px rgba(255,110,30,.7)); }
     75%{ transform: scaleY(1.05) scaleX(.97) rotate(-1deg); }
   }
-  .diya-glow{ position:absolute; bottom:8%; left:50%; transform:translateX(-50%); width:210px; height:210px; border-radius:50%;
-    background: radial-gradient(circle, rgba(255,160,70,.55), transparent 70%); opacity:0; transition: opacity .8s ease; z-index:1; filter: blur(4px); }
-  .diya-glow.lit{ opacity:1; animation: glowPulse 2.2s ease-in-out infinite; }
-  @keyframes glowPulse{ 0%,100%{ transform:translateX(-50%) scale(1);} 50%{ transform:translateX(-50%) scale(1.12);} }
-  .diya-caption{ margin-top:1.4rem; font-size:1rem; color:var(--cream-dim); position:relative; z-index:2; }
-  .blessing-msg{ margin-top:1.3rem; max-width:34ch; font-family:'Rozha One',serif; font-size:clamp(1rem,2.6vw,1.2rem); color:var(--gold-bright); line-height:1.65;
-    opacity:0; transform: translateY(12px); transition: opacity .9s var(--ease-soft), transform .9s var(--ease-soft); margin-inline:auto; position:relative; z-index:2; }
-  .blessing-msg.show{ opacity:1; transform:translateY(0); }
+  .diya-glow{ position:absolute; bottom:14%; left:50%; transform:translateX(-50%); width:210px; height:210px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,160,70,.22), transparent 70%); opacity:1; transition: opacity .8s ease; z-index:1; filter: blur(4px);
+    animation: idleGlow 3s ease-in-out infinite; }
+  @keyframes idleGlow{ 0%,100%{ transform:translateX(-50%) scale(1); opacity:.5;} 50%{ transform:translateX(-50%) scale(1.06); opacity:.75;} }
+  .diya-glow.lit{ background: radial-gradient(circle, rgba(255,160,70,.55), transparent 70%); animation: glowPulse 2.2s ease-in-out infinite; }
+  @keyframes glowPulse{ 0%,100%{ transform:translateX(-50%) scale(1); opacity:1;} 50%{ transform:translateX(-50%) scale(1.12); opacity:1;} }
+  .diya-caption{
+    margin-top:1rem; position:relative; z-index:2;
+    display:flex; align-items:center; justify-content:center; gap:.4rem;
+    width:max-content; max-width:90%; margin-inline:auto;
+    padding:.35rem .95rem; border-radius:999px;
+    background:rgba(0,0,0,.25); border:1px solid rgba(224,172,63,.4);
+    font-size:.85rem; color:var(--gold-bright); text-align:center;
+    animation: tapBounce 2s ease-in-out infinite;
+  }
+  .diya-caption.lit{ animation:none; background:transparent; border-color:transparent; color:var(--cream-dim); }
+  .blessing-msg{
+    max-height:0; opacity:0; overflow:hidden; margin-top:0;
+    max-width:34ch; font-family:'Rozha One',serif; font-size:clamp(.95rem,2.2vw,1.1rem); color:var(--gold-bright); line-height:1.5;
+    transform: translateY(12px); transition: opacity .8s var(--ease-soft), transform .8s var(--ease-soft), max-height .8s var(--ease-soft), margin-top .8s var(--ease-soft);
+    margin-inline:auto; position:relative; z-index:2;
+  }
+  .blessing-msg.show{ opacity:1; transform:translateY(0); max-height:160px; margin-top:.9rem; }
+  .pooja-strip{
+    max-width:360px; margin:0 auto; padding: .85rem 1.2rem;
+    background: linear-gradient(160deg, rgba(224,172,63,.14), rgba(224,172,63,.04));
+    border:1px solid rgba(224,172,63,.35); border-radius:14px;
+    position:relative;
+  }
+  .pooja-strip h3{ font-family:'Rozha One',serif; font-size:clamp(1.05rem,2.8vw,1.25rem); color:var(--gold-bright); margin-bottom:.3rem; }
+  .pooja-strip .pooja-time{ font-size:.85rem; }
+  .pooja-strip .pooja-line{ font-size:.8rem; margin-top:.3rem; }
+  .altar-divider{ display:flex; align-items:center; gap:.6rem; max-width:220px; margin:0 auto .8rem; color:var(--gold-dim); font-size:.8rem; }
+  .altar-divider::before, .altar-divider::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, transparent, rgba(224,172,63,.5), transparent); }
+  .puja-reveal{
+    max-height:0; opacity:0; overflow:hidden;
+    transform:translateY(14px);
+    transition: opacity .7s ease, transform .7s var(--ease-soft), max-height .7s var(--ease-soft), margin-top .7s var(--ease-soft);
+    margin-top:0;
+  }
+  .puja-reveal.show{ max-height:260px; opacity:1; transform:translateY(0); margin-top:1.3rem; }
 
   /* ================= CLOSING PAGE ================= */
   .countdown{ display:flex; gap:clamp(.5rem,2.5vw,1rem); justify-content:center; margin:1.3rem 0 1.8rem; flex-wrap:wrap; }
@@ -540,11 +650,7 @@
     <div class="gate-door left">
       <div class="door-face"></div>
       <div class="door-studs"></div>
-      <svg class="door-jali" viewBox="0 0 100 140" fill="none">
-        <path d="M50 6C30 20 20 42 20 68c0 30 14 48 30 60 16-12 30-30 30-60 0-26-10-48-30-62Z" stroke="#f6d585" stroke-width="1.4" opacity=".8"/>
-        <path d="M28 40 L72 96 M72 40 L28 96 M50 24 V116 M20 68 H80" stroke="#f6d585" stroke-width=".7" opacity=".45"/>
-        <circle cx="50" cy="68" r="16" stroke="#f6d585" stroke-width="1" opacity=".55"/>
-      </svg>
+      <div class="door-jali"><img src="ganpati-icon.png" alt="Lord Ganesha"></div>
       <div class="door-handle">
         <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#f6d585" stroke-width="3" fill="rgba(224,172,63,.25)"/><circle cx="20" cy="20" r="4" fill="#e0ac3f"/></svg>
       </div>
@@ -552,11 +658,7 @@
     <div class="gate-door right">
       <div class="door-face"></div>
       <div class="door-studs"></div>
-      <svg class="door-jali" viewBox="0 0 100 140" fill="none">
-        <path d="M50 6C30 20 20 42 20 68c0 30 14 48 30 60 16-12 30-30 30-60 0-26-10-48-30-62Z" stroke="#f6d585" stroke-width="1.4" opacity=".8"/>
-        <path d="M28 40 L72 96 M72 40 L28 96 M50 24 V116 M20 68 H80" stroke="#f6d585" stroke-width=".7" opacity=".45"/>
-        <circle cx="50" cy="68" r="16" stroke="#f6d585" stroke-width="1" opacity=".55"/>
-      </svg>
+      <div class="door-jali"><img src="ganpati-icon.png" alt="Lord Ganesha"></div>
       <div class="door-handle">
         <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="#f6d585" stroke-width="3" fill="rgba(224,172,63,.25)"/><circle cx="20" cy="20" r="4" fill="#e0ac3f"/></svg>
       </div>
@@ -583,11 +685,12 @@
   </div>
 </div>
 
-<!-- ================= BOOK CONTAINER ================= -->
-<div class="book-container" id="bookContainer">
+<!-- ================= STORY SCROLL ================= -->
+<div class="progress-rail" id="progressRail" style="display:none;"><div class="progress-fill" id="progressFill"></div></div>
+<div class="story-scroll" id="storyScroll">
 
   <!-- PAGE 0: WELCOME -->
-  <section class="book-page" data-i="0">
+  <section class="story-section" data-i="0">
     <div class="page-inner">
       <div class="shloka-columns">
         <p class="shloka-hindi">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ<br>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा</p>
@@ -596,19 +699,39 @@
       </div>
       <p class="shloka-sub">O Lord of the curved trunk and mighty form, radiant as a million suns — remove all obstacles from my endeavours, always.</p>
     </div>
+    <div class="explore-hint">
+      <span>Scroll to explore</span>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
   </section>
 
   <!-- PAGE 1: ENVELOPE / INVITATION -->
-  <section class="book-page" data-i="1">
+  <section class="story-section" data-i="1">
     <div class="page-inner">
       <div class="pill"><span class="dot"></span>The Invitation</div>
       <div class="envelope-zone">
+        <div class="envelope-toran">
+          <svg viewBox="0 0 280 46" fill="none">
+            <path d="M4 6 Q70 30 140 12 Q210 30 276 6" stroke="#c98a2e" stroke-width="1.6" fill="none" opacity=".85"/>
+            <g fill="#ff9a3d">
+              <circle cx="18" cy="9" r="7"/><circle cx="55" cy="20" r="6"/><circle cx="92" cy="10" r="7"/><circle cx="129" cy="16" r="6"/>
+              <circle cx="151" cy="16" r="6"/><circle cx="188" cy="10" r="7"/><circle cx="225" cy="20" r="6"/><circle cx="262" cy="9" r="7"/>
+            </g>
+            <g fill="#f6d585">
+              <circle cx="18" cy="9" r="2.8"/><circle cx="92" cy="10" r="2.8"/><circle cx="151" cy="16" r="2.4"/><circle cx="188" cy="10" r="2.8"/><circle cx="262" cy="9" r="2.8"/>
+            </g>
+            <g fill="#5c8a3c">
+              <path d="M35 14 l11 9 -4 -13z"/><path d="M108 15 l11 9 -4 -13z"/><path d="M170 15 l11 9 -4 -13z"/><path d="M243 14 l11 9 -4 -13z"/>
+            </g>
+          </svg>
+        </div>
         <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open the invitation envelope">
           <div class="envelope-body"></div>
-          <div class="wax-seal"><svg viewBox="0 0 200 220" width="26" height="29"><use href="#ganeshaCrest"/></svg></div>
-          <div class="envelope-flap"></div>
+          <div class="wax-seal"><svg viewBox="0 0 200 220" width="32" height="35"><use href="#ganeshaCrest"/></svg></div>
+          <div class="envelope-flap"><svg class="flap-crest" viewBox="0 0 200 220"><use href="#ganeshaCrest"/></svg></div>
           <div class="envelope-tap">Tap to open</div>
         </div>
+        <div class="card-glow" id="cardGlow"></div>
         <div class="card-unfold" id="cardUnfold">
           <div class="fold-panel top">
             <svg class="fold-crest" viewBox="0 0 200 220"><use href="#ganeshaCrest"/></svg>
@@ -623,14 +746,14 @@
               </div>
               <div class="fold-row">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16l6-3 6 3 4-2V2l-4 2-6-3-6 3z" stroke="currentColor" stroke-width="1.6"/></svg>
-                <div><div class="label">Visarjan</div><div class="value">Friday, 25th September 2026<small>Anant Chaturdashi · Procession begins 5:00 PM</small></div></div>
+                <div><div class="label">Visarjan</div><div class="value">Friday, 18th September 2026<small>5th Day Visarjan · Procession begins 5:00 PM</small></div></div>
               </div>
               <div class="fold-row">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s7-7.2 7-12.5A7 7 0 105 9.5C5 14.8 12 22 12 22z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
-                <div><div class="label">Venue</div><div class="value">Jethva Niwas, Plot 14, Shree Ganesh Society<br>Malad West, Mumbai 400064</div></div>
+                <div><div class="label">Venue</div><div class="value">D/1903, Dosti Oro 67 Society<br>Bandar Pakhadi Rd, Kandivali West</div></div>
               </div>
             </div>
-            <a class="directions-btn" href="https://www.google.com/maps/search/?api=1&query=Jethva+Niwas+Malad+West+Mumbai" target="_blank" rel="noopener">
+            <a class="directions-btn" href="https://www.google.com/maps/search/?api=1&query=Dosti+Oro+67+Bandar+Pakhadi+Rd+Kandivali+West+Mumbai" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
               Get Directions
             </a>
@@ -638,27 +761,13 @@
         </div>
       </div>
     </div>
-    <div class="scroll-hint">scroll</div>
   </section>
 
-  <!-- PAGE 2: SATYANARAYAN POOJA -->
-  <section class="book-page" data-i="2">
-    <div class="page-inner pooja-card">
-      <svg class="pooja-mice left mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
-      <svg class="pooja-mice right mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
-      <div class="pill"><span class="dot"></span>Day 4 · Special</div>
-      <h2>Satyanarayan Pooja</h2>
-      <div class="pooja-time">Thursday, 17th September · 10:00 AM onwards</div>
-      <p class="pooja-line">Do join us for the pooja and prasad</p>
-    </div>
-    <div class="scroll-hint">scroll</div>
-  </section>
-
-  <!-- PAGE 3: DIYA -->
-  <section class="book-page" data-i="3">
+  <!-- PAGE 2: DIYA LIGHTING + SATYANARAYAN POOJA -->
+  <section class="story-section" data-i="2">
     <div class="page-inner">
       <div class="pill"><span class="dot"></span>Aarti · An Offering of Light</div>
-      <h2 style="font-size:clamp(1.3rem,3.6vw,1.8rem); color:var(--gold-bright); margin-bottom:1.4rem;">Light a Diya for Bappa</h2>
+      <h2 style="font-size:clamp(1.2rem,3.2vw,1.7rem); color:var(--gold-bright); margin-bottom:1rem;">Light a Diya for Bappa</h2>
       <div class="altar">
         <svg class="rangoli" viewBox="0 0 200 200" fill="none" aria-hidden="true">
           <circle cx="100" cy="100" r="94" stroke="#9a7226" stroke-width="1" opacity=".35"/>
@@ -677,36 +786,69 @@
         </svg>
         <div class="diya-glow" id="diyaGlow"></div>
         <button class="diya-btn" id="diyaBtn" aria-label="Light the diya">
-          <svg class="diya-svg" viewBox="0 0 200 160" fill="none">
-            <g class="flame" id="flame">
-              <path d="M100 28c9 15 15 23 15 35 0 11-7 19-15 19s-15-8-15-19c0-12 6-20 15-35Z" fill="url(#flameGrad)"/>
-              <path d="M100 45c4 8 7 12 7 18 0 6-3 10-7 10s-7-4-7-10c0-6 3-10 7-18Z" fill="#fff3c4" opacity=".85"/>
-            </g>
+          <svg class="diya-svg" viewBox="0 0 240 172" fill="none">
             <defs>
-              <linearGradient id="flameGrad" x1="100" y1="28" x2="100" y2="82" gradientUnits="userSpaceOnUse">
+              <linearGradient id="flameGrad" x1="17" y1="38" x2="17" y2="84" gradientUnits="userSpaceOnUse">
                 <stop stop-color="#fff3c4"/><stop offset=".45" stop-color="#ffb347"/><stop offset="1" stop-color="#ff6b1a"/>
               </linearGradient>
-              <radialGradient id="clayGrad" cx="35%" cy="30%" r="75%">
-                <stop offset="0" stop-color="#e8935a"/><stop offset="1" stop-color="#a8501f"/>
+              <radialGradient id="clayGrad" cx="34%" cy="24%" r="80%">
+                <stop offset="0" stop-color="#eb9d63"/><stop offset="1" stop-color="#8f3f1a"/>
+              </radialGradient>
+              <radialGradient id="plateGrad" cx="35%" cy="20%" r="80%">
+                <stop offset="0" stop-color="#f6d585"/><stop offset="1" stop-color="#ac7a2c"/>
+              </radialGradient>
+              <radialGradient id="oilGrad" cx="36%" cy="24%" r="75%">
+                <stop offset="0" stop-color="#ffdfa8"/><stop offset="1" stop-color="#c96a1f"/>
               </radialGradient>
             </defs>
-            <ellipse cx="100" cy="98" rx="58" ry="20" fill="url(#clayGrad)" stroke="#6b2c10" stroke-width="1.5"/>
-            <path d="M42 98c0 16 26 28 58 28s58-12 58-28" fill="url(#clayGrad)" stroke="#6b2c10" stroke-width="1.5"/>
-            <g fill="#fbead0" opacity=".7">
-              <circle cx="62" cy="100" r="2"/><circle cx="80" cy="106" r="2"/><circle cx="100" cy="108" r="2"/><circle cx="120" cy="106" r="2"/><circle cx="138" cy="100" r="2"/>
+
+            <!-- brass plate beneath the diya -->
+            <ellipse cx="130" cy="146" rx="104" ry="14" fill="url(#plateGrad)" stroke="#8a6a24" stroke-width="1.2"/>
+            <ellipse cx="130" cy="142" rx="86" ry="8" fill="none" stroke="#fff3c4" stroke-width=".6" opacity=".4"/>
+
+            <!-- clay body -->
+            <ellipse cx="130" cy="98" rx="82" ry="34" fill="url(#clayGrad)" stroke="#5c2610" stroke-width="1.6"/>
+
+            <!-- pinched wick spout, merging cleanly into the body's left edge -->
+            <path d="M58 92 C40 85 22 87 10 94 C22 101 40 103 58 100 Z" fill="url(#clayGrad)" stroke="#5c2610" stroke-width="1.4" stroke-linejoin="round"/>
+
+            <!-- glossy oil pool -->
+            <ellipse cx="130" cy="86" rx="58" ry="17" fill="url(#oilGrad)" stroke="#6b2c10" stroke-width="1.2"/>
+            <ellipse cx="112" cy="81" rx="11" ry="3.2" fill="#fff3c4" opacity=".55"/>
+
+            <!-- rim dots -->
+            <g fill="#fbead0" opacity=".65">
+              <circle cx="76" cy="118" r="2"/><circle cx="103" cy="126" r="2"/><circle cx="130" cy="129" r="2"/><circle cx="157" cy="126" r="2"/><circle cx="184" cy="118" r="2"/>
             </g>
-            <ellipse cx="100" cy="86" rx="34" ry="9" fill="#c96a30" stroke="#6b2c10" stroke-width="1.2"/>
+
+            <!-- wick -->
+            <path d="M16 90 q1.4 -9 3 0" stroke="#2b1206" stroke-width="2" stroke-linecap="round"/>
+
+            <g class="flame" id="flame">
+              <path d="M17 38c7.5 13 12.5 20.5 12.5 30 0 9.5-5.9 16-12.5 16s-12.5-6.5-12.5-16c0-9.5 5-17 12.5-30Z" fill="url(#flameGrad)"/>
+              <path d="M17 55c3.3 6.8 5.9 10.2 5.9 15.2 0 5-2.6 8.4-5.9 8.4s-5.9-3.4-5.9-8.4c0-5 2.6-8.4 5.9-15.2Z" fill="#fff3c4" opacity=".85"/>
+            </g>
           </svg>
         </button>
         <div class="diya-caption" id="diyaCaption">Tap the diya to begin the aarti</div>
         <p class="blessing-msg" id="blessingMsg">May Lord Ganesha remove every obstacle from your path and fill your home with wisdom, prosperity and joy.</p>
       </div>
+
+      <div class="puja-reveal" id="pujaReveal">
+        <div class="altar-divider">Day 4 · Special</div>
+        <div class="pooja-strip">
+          <svg class="pooja-mice left mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
+          <svg class="pooja-mice right mouse-icon" viewBox="0 0 100 70" fill="currentColor"><use href="#mouseMotif"/></svg>
+          <h3>Satyanarayan Pooja</h3>
+          <div class="pooja-time">Thursday, 17th September · 10:00 AM onwards</div>
+          <p class="pooja-line">Do join us for the pooja and prasad</p>
+        </div>
+      </div>
     </div>
-    <div class="scroll-hint">scroll</div>
   </section>
 
-  <!-- PAGE 4: COUNTDOWN + CALENDAR -->
-  <section class="book-page" data-i="4">
+  <!-- PAGE 3: COUNTDOWN + CALENDAR -->
+  <section class="story-section" data-i="3">
     <div class="page-inner">
       <div class="pill"><span class="dot"></span>Save the Date</div>
       <h2 style="font-size:clamp(1.3rem,3.6vw,1.8rem); color:var(--gold-bright);">Counting Down to Ganpati Bappa</h2>
@@ -730,7 +872,6 @@
     </div>
   </section>
 
-  <div class="book-nav" id="bookNav"></div>
 </div>
 
 <script>
@@ -799,7 +940,9 @@
   const gateScreen = document.getElementById("gateScreen");
   const gateStage = document.getElementById("gateStage");
   const openGateBtn = document.getElementById("openGateBtn");
-  const bookContainer = document.getElementById("bookContainer");
+  const storyScroll = document.getElementById("storyScroll");
+  const progressRail = document.getElementById("progressRail");
+  const progressFill = document.getElementById("progressFill");
   let gateOpened = false;
 
   const bgMusic = document.getElementById("bgMusic");
@@ -818,134 +961,94 @@
     setTimeout(() => burstPetals(30, 0.3, 0.5), 200);
     setTimeout(() => burstPetals(30, 0.7, 0.5), 350);
     setTimeout(() => {
-      bookContainer.style.display = "block";
-      requestAnimationFrame(() => bookContainer.classList.add("visible"));
+      storyScroll.style.display = "block";
+      progressRail.style.display = "block";
+      requestAnimationFrame(() => {
+        storyScroll.classList.add("visible");
+        updateSections();
+      });
       gateScreen.classList.add("fading");
-      const introInner = document.querySelector('.book-page[data-i="0"] .page-inner');
-      setTimeout(() => introInner.classList.add("show"), 500);
-      setTimeout(() => introInner.classList.remove("show"), 4600);
-      setTimeout(() => { if(current === 0) goNext(); }, 6100);
     }, 950);
     setTimeout(() => { gateScreen.style.display = "none"; }, 1650);
   });
 
-  /* ============ BOOK PAGINATION ============ */
-  const pages = Array.from(document.querySelectorAll(".book-page"));
-  const total = pages.length;
-  let current = 0, animating = false;
-  const navWrap = document.getElementById("bookNav");
-  pages.forEach((_, i) => {
-    const d = document.createElement("button");
-    d.className = "book-dot" + (i === 0 ? " active" : "");
-    d.setAttribute("aria-label", "Go to page " + (i+1));
-    d.addEventListener("click", () => goToPage(i));
-    navWrap.appendChild(d);
-  });
-  const dots = Array.from(navWrap.children);
+  /* ============ SCROLL-LINKED PAGE TRANSITIONS ============ */
+  const sections = Array.from(document.querySelectorAll(".story-section"));
+  let scrollTicking = false;
 
-  function updateDots(){ dots.forEach((d,i) => d.classList.toggle("active", i === current)); }
-
-  function layout(){
-    pages.forEach((p, i) => {
-      p.style.transition = "none";
-      p.style.transform = "rotateY(0deg)";
-      p.classList.remove("turning");
-      p.style.zIndex = i === current ? 5 : 1;
-      p.style.visibility = i === current ? "visible" : "hidden";
-      p.style.pointerEvents = i === current ? "auto" : "none";
-      void p.offsetWidth;
-      p.style.transition = "";
+  function updateSections(){
+    const cRect = storyScroll.getBoundingClientRect();
+    const centerY = cRect.top + cRect.height / 2;
+    sections.forEach(sec => {
+      const r = sec.getBoundingClientRect();
+      const secCenter = r.top + r.height / 2;
+      // -1 = a full screen above center, 0 = centered, 1 = a full screen below center
+      const progress = Math.max(-1.6, Math.min(1.6, (secCenter - centerY) / cRect.height));
+      const opacity = Math.max(0, 1 - Math.abs(progress) * 1.05);
+      const scale = 1 - Math.min(Math.abs(progress) * 0.22, 0.3);
+      const tilt = progress * -12; // deg, gives an incoming/outgoing page feel
+      const rise = progress * 60; // px, subtle parallax drift
+      sec.style.opacity = opacity.toFixed(3);
+      sec.style.transform = `translateY(${rise}px) scale(${scale}) rotateX(${tilt}deg)`;
+      sec.style.filter = `blur(${Math.min(Math.abs(progress) * 4, 4).toFixed(2)}px)`;
+      sec.classList.toggle("revealed", opacity > 0.62);
     });
-    updateDots();
+    const max = storyScroll.scrollHeight - storyScroll.clientHeight;
+    const pct = max > 0 ? (storyScroll.scrollTop / max) * 100 : 0;
+    progressFill.style.width = pct + "%";
+    scrollTicking = false;
   }
 
-  function goNext(){
-    if(animating || current >= total - 1) return;
-    animating = true;
-    const cur = pages[current], next = pages[current+1];
-    next.style.visibility = "visible"; next.style.zIndex = 4; next.style.pointerEvents = "none"; next.style.transform = "rotateY(0deg)";
-    cur.style.zIndex = 6; cur.style.pointerEvents = "none"; cur.style.transformOrigin = "left center";
-    cur.classList.add("turning");
-    void cur.offsetWidth;
-    cur.style.transform = "rotateY(-178deg)";
-    setTimeout(() => { current++; layout(); animating = false; }, 850);
+  storyScroll.addEventListener("scroll", () => {
+    if(!scrollTicking){ scrollTicking = true; requestAnimationFrame(updateSections); }
+  }, { passive:true });
+  window.addEventListener("resize", () => requestAnimationFrame(updateSections));
+
+  /* ============ FULL-PAGE SNAP NAVIGATION ============ */
+  // any deliberate scroll gesture — a wheel tick, a short swipe, an arrow key —
+  // advances exactly one section, instead of free-scrolling through the transform.
+  let currentIndex = 0;
+  let isSnapping = false;
+
+  function goToIndex(i){
+    i = Math.max(0, Math.min(sections.length - 1, i));
+    if(i === currentIndex || isSnapping) return;
+    currentIndex = i;
+    isSnapping = true;
+    sections[i].scrollIntoView({ behavior: "smooth", block: "center" });
+    clearTimeout(goToIndex._t);
+    goToIndex._t = setTimeout(() => { isSnapping = false; }, 800);
   }
 
-  function goPrev(){
-    if(animating || current <= 0) return;
-    animating = true;
-    const cur = pages[current], prev = pages[current-1];
-    prev.style.visibility = "visible"; prev.style.zIndex = 6; prev.style.transformOrigin = "left center"; prev.style.transform = "rotateY(-178deg)";
-    prev.classList.add("turning");
-    cur.style.zIndex = 4;
-    void prev.offsetWidth;
-    prev.style.transform = "rotateY(0deg)";
-    setTimeout(() => { current--; layout(); animating = false; }, 850);
-  }
-
-  function crossfadeTo(i){
-    if(animating) return;
-    animating = true;
-    const cur = pages[current], target = pages[i];
-    target.style.transition = "opacity .5s ease"; target.style.opacity = "0";
-    target.style.visibility = "visible"; target.style.zIndex = 5; target.style.transform = "rotateY(0deg)";
-    cur.style.zIndex = 1;
-    requestAnimationFrame(() => { target.style.opacity = "1"; });
-    setTimeout(() => {
-      target.style.transition = ""; target.style.opacity = "";
-      current = i; layout(); animating = false;
-    }, 520);
-  }
-
-  function goToPage(i){
-    if(i === current || animating) return;
-    if(i === current + 1) return goNext();
-    if(i === current - 1) return goPrev();
-    crossfadeTo(i);
-  }
-
-  function atBottom(el){ return el.scrollHeight - el.scrollTop - el.clientHeight < 6; }
-  function atTop(el){ return el.scrollTop < 6; }
-
-  let wheelCooldown = false;
-  window.addEventListener("wheel", (e) => {
-    if(bookContainer.style.display !== "block") return;
-    const page = pages[current];
-    if(e.deltaY > 12){
-      if(atBottom(page)){
-        e.preventDefault();
-        if(!wheelCooldown){ wheelCooldown = true; goNext(); setTimeout(() => wheelCooldown = false, 900); }
-      }
-    } else if(e.deltaY < -12){
-      if(atTop(page)){
-        e.preventDefault();
-        if(!wheelCooldown){ wheelCooldown = true; goPrev(); setTimeout(() => wheelCooldown = false, 900); }
-      }
-    }
+  storyScroll.addEventListener("wheel", (e) => {
+    if(storyScroll.style.display !== "block") return;
+    e.preventDefault();
+    if(isSnapping) return;
+    if(e.deltaY > 6) goToIndex(currentIndex + 1);
+    else if(e.deltaY < -6) goToIndex(currentIndex - 1);
   }, { passive:false });
 
   let touchStartY = 0;
-  window.addEventListener("touchstart", (e) => { touchStartY = e.touches[0].clientY; }, { passive:true });
-  window.addEventListener("touchend", (e) => {
-    if(bookContainer.style.display !== "block") return;
-    const page = pages[current];
+  storyScroll.addEventListener("touchstart", (e) => { touchStartY = e.touches[0].clientY; }, { passive:true });
+  storyScroll.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive:false });
+  storyScroll.addEventListener("touchend", (e) => {
+    if(isSnapping) return;
     const dy = touchStartY - e.changedTouches[0].clientY;
-    if(Math.abs(dy) < 55) return;
-    if(dy > 0 && atBottom(page)) goNext();
-    else if(dy < 0 && atTop(page)) goPrev();
+    if(Math.abs(dy) < 20) return;
+    if(dy > 0) goToIndex(currentIndex + 1);
+    else goToIndex(currentIndex - 1);
   }, { passive:true });
 
   window.addEventListener("keydown", (e) => {
-    if(bookContainer.style.display !== "block") return;
-    if(e.key === "ArrowDown" || e.key === "PageDown"){ e.preventDefault(); goNext(); }
-    else if(e.key === "ArrowUp" || e.key === "PageUp"){ e.preventDefault(); goPrev(); }
+    if(storyScroll.style.display !== "block") return;
+    if(e.key === "ArrowDown" || e.key === "PageDown"){ e.preventDefault(); goToIndex(currentIndex + 1); }
+    else if(e.key === "ArrowUp" || e.key === "PageUp"){ e.preventDefault(); goToIndex(currentIndex - 1); }
   });
-
-  layout();
 
   /* ============ ENVELOPE ============ */
   const envelope = document.getElementById("envelope");
   const cardUnfold = document.getElementById("cardUnfold");
+  const cardGlow = document.getElementById("cardGlow");
   let envelopeOpened = false;
   function openEnvelope(){
     if(envelopeOpened) return;
@@ -953,12 +1056,15 @@
     envelope.classList.add("open");
     const rect = envelope.getBoundingClientRect();
     burstPetals(24, (rect.left+rect.width/2)/innerWidth, rect.top/innerHeight);
-    // let the flap finish most of its arc before the card slides out, so the
+    // start pulling the card out while the flap is still mid-swing, so the
     // two motions read as one continuous gesture instead of colliding
     setTimeout(() => {
-      envelope.classList.add("opening");
+      cardGlow.classList.add("flash");
       cardUnfold.classList.add("show");
-    }, 650);
+    }, 500);
+    setTimeout(() => {
+      envelope.classList.add("opening");
+    }, 950);
   }
   envelope.addEventListener("click", openEnvelope);
   envelope.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openEnvelope(); } });
@@ -969,15 +1075,17 @@
   const diyaGlow = document.getElementById("diyaGlow");
   const diyaCaption = document.getElementById("diyaCaption");
   const blessingMsg = document.getElementById("blessingMsg");
+  const pujaReveal = document.getElementById("pujaReveal");
   let diyaLit = false;
   diyaBtn.addEventListener("click", () => {
     if(diyaLit) return;
     diyaLit = true;
-    flame.classList.add("lit"); diyaGlow.classList.add("lit");
+    flame.classList.add("lit"); diyaGlow.classList.add("lit"); diyaCaption.classList.add("lit");
     diyaCaption.textContent = "Your light joins ours — blessed";
     const rect = diyaBtn.getBoundingClientRect();
     burstPetals(45, (rect.left + rect.width/2)/innerWidth, (rect.top)/innerHeight);
     setTimeout(() => blessingMsg.classList.add("show"), 500);
+    setTimeout(() => pujaReveal.classList.add("show"), 950);
   });
 
   /* ============ COUNTDOWN ============ */
@@ -997,15 +1105,15 @@
   // Sthapana muhurat (11:02) through evening aarthi + prasad (7:30 PM start, wraps ~9:00 PM)
   const startStr = "20260914T110200", endStr = "20260914T210000";
   const title = encodeURIComponent("Ganesh Chaturthi — The Jethva Family");
-  const details = encodeURIComponent("Sthapana & Aarthi at Jethva Niwas. Join us to welcome Lord Ganesha home.");
-  const location = encodeURIComponent("Jethva Niwas, Plot 14, Shree Ganesh Society, Malad West, Mumbai 400064");
+  const details = encodeURIComponent("Sthapana & Aarthi at the Jethva residence. Join us to welcome Lord Ganesha home.");
+  const location = encodeURIComponent("D/1903, Dosti Oro 67 Society, Bandar Pakhadi Rd, Kandivali West, Mumbai");
   gcalBtn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}`;
   const icsContent = [
     "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Jethva Family//Ganesh Chaturthi//EN","BEGIN:VEVENT",
     "UID:" + Date.now() + "@jethvafamily","DTSTART:" + startStr,"DTEND:" + endStr,
     "SUMMARY:Ganesh Chaturthi — The Jethva Family",
-    "DESCRIPTION:Sthapana & Aarthi at Jethva Niwas. Join us to welcome Lord Ganesha home.",
-    "LOCATION:Jethva Niwas, Plot 14, Shree Ganesh Society, Malad West, Mumbai 400064",
+    "DESCRIPTION:Sthapana & Aarthi at the Jethva residence. Join us to welcome Lord Ganesha home.",
+    "LOCATION:D/1903, Dosti Oro 67 Society, Bandar Pakhadi Rd, Kandivali West, Mumbai",
     "END:VEVENT","END:VCALENDAR"
   ].join("\r\n");
   let icsUrl = null;
